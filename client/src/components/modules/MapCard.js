@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import {
-  DeleteOutlined,
-  StarTwoTone,
+  InfoCircleTwoTone,
+  StarOutlined,
   ClockCircleTwoTone,
   DashboardTwoTone,
 } from "@ant-design/icons";
@@ -21,8 +21,7 @@ class MapCard extends Component {
       <Card
         title={
           <div className="MapCard-title">
-            <div className={`MapCard-icon mod-${this.props.mod}`}></div>
-            {`${this.props.mod}${this.props.index}`}
+            <InfoCircleTwoTone className="MapCard-status" /> Pending
           </div>
         }
         bordered={true}
@@ -31,46 +30,32 @@ class MapCard extends Component {
             <img src={this.props.image} />
           </a>
         }
-        extra={
-          this.props.isPooler() && (
-            <Popconfirm
-              title={`Are you sure you want to remove ${this.props.mod}${this.props.index}?`}
-              onConfirm={() => this.props.handleDelete(this.props.mapId)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <DeleteOutlined />
-            </Popconfirm>
-          )
-        }
         className="MapCard-card"
       >
-        <div className="MapCard-row MapCard-primary">{`${this.props.title} [${this.props.diff}]`}</div>
+        <div className="MapCard-row MapCard-primary">
+          <span>{this.props.title}</span>
+          <span>
+            <span className="MapCard-attr">
+              <ClockCircleTwoTone /> {this.props.length}
+            </span>
+            <span className="MapCard-attr">
+              <DashboardTwoTone /> {this.props.bpm}bpm
+            </span>
+          </span>
+        </div>
         <div className="MapCard-row">{this.props.artist}</div>
-        <div className="MapCard-row MapCard-small">{`Mapset by ${this.props.creator}`}</div>
-        <div className="MapCard-row MapCard-small">{`Picked by ${this.props.pooler}`}</div>
+        <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
 
         <div className="MapCard-divider"></div>
-
-        <div className="MapCard-attr-row">
-          <div className="MapCard-attr">
-            <StarTwoTone /> {this.props.sr}
-          </div>
-          <div className="MapCard-attr">
-            <ClockCircleTwoTone /> {this.props.length}
-          </div>
-          <div className="MapCard-attr">
-            <DashboardTwoTone /> {this.props.bpm}bpm
-          </div>
-        </div>
-
-        <div className="MapCard-attr-row">
-          <div className="MapCard-attr">
-            <span className="u-bold">OD:</span> {this.props.od}
-          </div>
-          <div className="MapCard-attr">
-            <span className="u-bold">HP:</span> {this.props.hp}
-          </div>
+        <div className="MapCard-diff-list">
+          {this.props.diffs.map((diff) => (
+            <div className="MapCard-diff">
+              <div className="u-bold">{diff.name}</div>
+              <div>
+                {diff.sr} <StarOutlined />
+              </div>
+            </div>
+          ))}
         </div>
       </Card>
     );

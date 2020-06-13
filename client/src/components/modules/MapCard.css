@@ -44,6 +44,8 @@
 .MapCard-primary {
   font-size: 16pt;
   color: rgb(47, 47, 47);
+  display: flex;
+  justify-content: space-between;
 }
 
 .MapCard-divider {
@@ -64,28 +66,21 @@
   color: rgb(125, 125, 125);
 }
 
-/* Colors for mod icons */
-
-.mod-NM {
-  background-color: rgb(187, 187, 187);
+.MapCard-status {
+  margin-right: var(--m);
 }
 
-.mod-HD {
-  background-color: rgb(255, 239, 149);
+.MapCard-diff-list {
+  display: flex;
+  flex-direction: wrap;
 }
 
-.mod-HR {
-  background-color: rgb(255, 173, 173);
-}
-
-.mod-DT {
-  background-color: rgb(203, 162, 250);
-}
-
-.mod-FM {
-  background-color: rgb(255, 182, 153);
-}
-
-.mod-TB {
-  background-color: rgb(126, 171, 255);
+.MapCard-diff {
+  border: 1px solid var(--darkgrey);
+  box-shadow: 2px 2px 2px var(--medgrey);
+  padding: var(--xs);
+  margin: var(--s);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }

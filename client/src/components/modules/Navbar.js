@@ -22,7 +22,9 @@ class Navbar extends Component {
             <Menu.Item key="1">
               <Link to="/">Home</Link>
             </Menu.Item>
-            <Menu.Item key="3">EhClown</Menu.Item>
+            <Menu.Item key="2">
+              <Link to="/request">Request</Link>
+            </Menu.Item>
             <Menu.Item key="4">
               <LoginButton {...this.props} />
             </Menu.Item>

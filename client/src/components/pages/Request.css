@@ -1,0 +1,26 @@
+.Request-container {
+  margin-top: var(--l);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+}
+
+.Request-input {
+  width: 350px !important;
+}
+
+.Request-mapbox {
+  margin-top: var(--l);
+  animation: fadeIn ease 1s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
