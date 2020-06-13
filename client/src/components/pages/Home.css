@@ -1,0 +1,27 @@
+.Home-title {
+  font-size: 32pt;
+  text-align: center;
+}
+
+.Home-about-container {
+  justify-content: center;
+  display: flex;
+}
+
+.Home-about {
+  font-size: 14pt;
+  padding: var(--s);
+  border: 1px solid var(--darkgrey);
+  max-width: 800px;
+}
+
+.Home-about p {
+  margin-bottom: 0;
+}
+
+.Home-container {
+  margin-top: var(--l);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}

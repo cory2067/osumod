@@ -1,0 +1,91 @@
+.content .MapCard-card {
+  margin: var(--m);
+  max-width: 600px;
+  flex-basis: 400px;
+  box-shadow: 0 0 12px;
+}
+
+.MapCard-card a img {
+  width: 100%;
+}
+
+.MapCard-inside {
+  display: flex;
+}
+
+.MapCard-card .ant-card-body {
+  padding: var(--s) var(--m);
+}
+
+.MapCard-card .ant-card-head-title {
+  padding: var(--s) 0;
+}
+
+.MapCard-title {
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.MapCard-icon {
+  height: 28px;
+  width: 28px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: var(--m);
+  box-shadow: 2px 2px 2px var(--darkgrey);
+}
+
+.MapCard-row {
+  line-height: 1.25;
+  font-size: 13pt;
+}
+
+.MapCard-primary {
+  font-size: 16pt;
+  color: rgb(47, 47, 47);
+}
+
+.MapCard-divider {
+  height: var(--m);
+}
+
+.MapCard-attr-row {
+  display: flex;
+}
+
+.MapCard-attr {
+  margin: 0px var(--s);
+  font-size: 13pt;
+}
+
+.MapCard-small {
+  font-size: 11pt;
+  color: rgb(125, 125, 125);
+}
+
+/* Colors for mod icons */
+
+.mod-NM {
+  background-color: rgb(187, 187, 187);
+}
+
+.mod-HD {
+  background-color: rgb(255, 239, 149);
+}
+
+.mod-HR {
+  background-color: rgb(255, 173, 173);
+}
+
+.mod-DT {
+  background-color: rgb(203, 162, 250);
+}
+
+.mod-FM {
+  background-color: rgb(255, 182, 153);
+}
+
+.mod-TB {
+  background-color: rgb(126, 171, 255);
+}

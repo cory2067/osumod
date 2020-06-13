@@ -1,0 +1,8 @@
+{
+  "colorize": "chalk.supportsColor", // --colorize
+  "levelFirst": false, // --levelFirst
+  "messageKey": "msg", // --messageKey
+  "messageFormat": false, // --messageFormat
+  "translateTime": "SYS:hh:MM:ss", // --translateTime
+  "ignore": "pid,hostname" // --ignore,
+}

@@ -1,0 +1,79 @@
+:root {
+  --darkgrey: #d4d4d4;
+  --medgrey: #e0e0e0;
+  --grey: #f7f7f7;
+  --white: #fff;
+  --bg: #f0f2f5;
+
+  --xs: 4px;
+  --s: 8px;
+  --m: 16px;
+  --l: 24px;
+  --xl: 32px;
+}
+
+html body {
+  background-color: var(--bg);
+}
+
+form {
+  flex-grow: 1;
+}
+
+.content {
+  padding: 24px 48px;
+}
+
+.u-flex {
+  display: flex;
+}
+
+.u-flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.u-sidebar {
+  flex: 0 0 150px;
+  margin-right: var(--l);
+}
+
+.u-flex-justifyCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.u-flex-alignCenter {
+  display: flex;
+  align-items: center;
+}
+
+.u-inlineBlock {
+  display: inline-block;
+}
+
+.u-bold {
+  font-weight: 600;
+}
+
+.u-textCenter {
+  text-align: center;
+}
+
+.u-relative {
+  position: relative;
+}
+
+.u-pointer {
+  cursor: pointer;
+}
+
+.u-link {
+  color: var(--primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.u-link:hover {
+  color: var(--primary--dim);
+}
