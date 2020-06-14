@@ -45,7 +45,7 @@
 }
 
 .MapCard-divider {
-  height: var(--m);
+  height: var(--s);
 }
 
 .MapCard-attr {
@@ -68,9 +68,13 @@
   margin-right: var(--m);
 }
 
+.MapCard-status.admin {
+  cursor: pointer;
+}
+
 .MapCard-diff-list {
   display: flex;
-  flex-direction: wrap;
+  flex-wrap: wrap;
 }
 
 .MapCard-diff {
@@ -81,4 +85,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.MapCard-attr-list {
+  display: flex;
+  justify-content: space-around;
 }

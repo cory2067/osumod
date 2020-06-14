@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import {
   InfoCircleTwoTone,
+  CloseCircleTwoTone,
+  CheckCircleTwoTone,
+  HeartTwoTone,
+  LikeTwoTone,
   StarOutlined,
   ClockCircleTwoTone,
   DashboardTwoTone,
@@ -10,6 +14,21 @@ import { Link } from "@reach/router";
 import { Card, Popconfirm } from "antd";
 import "./MapCard.css";
 
+const icons = {
+  Pending: InfoCircleTwoTone,
+  Rejected: CloseCircleTwoTone,
+  Accepted: CheckCircleTwoTone,
+  Nominated: LikeTwoTone,
+  Ranked: HeartTwoTone,
+};
+
+const colors = {
+  Pending: "#aaaaaa",
+  Accepted: "#52c41a",
+  Rejected: "#f8333c",
+  Ranked: "#eb2f96",
+};
+
 class MapCard extends Component {
   constructor(props) {
     super(props);
@@ -17,12 +36,19 @@ class MapCard extends Component {
   }
 
   render() {
+    let StatusIcon = icons[this.props.status] || InfoCircleTwoTone;
+
     return (
       <Card
         title={
           <div className="MapCard-title">
             <div>
-              <InfoCircleTwoTone className="MapCard-status" /> Pending
+              <StatusIcon
+                twoToneColor={colors[this.props.status]}
+                onClick={() => this.props.edit && this.props.edit(this.props)}
+                className={`MapCard-status ${this.props.admin ? "admin" : ""}`}
+              />
+              {` ${this.props.status}`}
             </div>
             <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
           </div>
@@ -35,25 +61,25 @@ class MapCard extends Component {
         }
         className="MapCard-card"
       >
-        <div className="MapCard-row MapCard-primary">
-          <span>{this.props.title}</span>
-          <span>
-            <span className="MapCard-attr">
-              <ClockCircleTwoTone /> {this.props.length}
-            </span>
-            <span className="MapCard-attr">
-              <DashboardTwoTone /> {this.props.bpm}bpm
-            </span>
-          </span>
-        </div>
+        <div className="MapCard-row MapCard-primary">{this.props.title}</div>
         <div className="MapCard-row">{this.props.artist}</div>
         <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
+
+        <div className="MapCard-divider"></div>
+        <div className="MapCard-attr-list">
+          <span className="MapCard-attr">
+            <ClockCircleTwoTone /> {this.props.length}
+          </span>
+          <span className="MapCard-attr">
+            <DashboardTwoTone /> {this.props.bpm}bpm
+          </span>
+        </div>
 
         {this.props.comment && (
           <>
             <div className="MapCard-divider"></div>
             <div className="MapCard-comment">
-              <span class="u-bold">Mapper's Comment: </span>
+              <span className="u-bold">Mapper's Comment: </span>
               {this.props.comment}
             </div>
           </>

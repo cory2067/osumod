@@ -7,7 +7,7 @@ import MapCard from "../modules/MapCard";
 import { CloseCircleTwoTone } from "@ant-design/icons";
 // data from "../../content/home-en";
 import { Layout, Result, Form, Input, message, Button, Switch } from "antd";
-import TextArea from "antd/lib/input/TextArea";
+const { TextArea } = Input;
 import { navigate } from "@reach/router";
 
 const { Content } = Layout;
@@ -21,13 +21,6 @@ const layout = {
   },
 };
 
-const tailLayout = {
-  wrapperCol: {
-    offset: 20,
-    span: 4,
-  },
-};
-
 class Request extends Component {
   constructor(props) {
     super(props);
@@ -36,14 +29,13 @@ class Request extends Component {
   }
 
   async componentDidMount() {
-    document.title = "osumod";
     const settings = await get("/api/settings");
     this.setState({ open: settings.open, pageReady: true });
   }
 
   onFinish = async (form) => {
     const link = form.link;
-    const regex = /.*(osu|old)\.ppy\.sh\/(b|s|beatmapsets)\/([0-9]+).*/g;
+    const regex = /.*(osu|old)\.ppy\.sh\/(s|beatmapsets)\/([0-9]+).*/g;
     const match = regex.exec(link);
     if (!match || !match[3]) {
       return message.error("Please enter a beatmap link");
@@ -91,7 +83,7 @@ class Request extends Component {
         <div className="Request-container">
           <div className="Request-form">
             <h1>Nomination Request</h1>
-            <Form {...layout} name="basic" onFinish={this.onFinish}>
+            <Form {...layout} name="request" onFinish={this.onFinish}>
               <Form.Item label="Map Link" name="link">
                 <Input />
               </Form.Item>
@@ -118,7 +110,7 @@ class Request extends Component {
           </div>
           {this.state.map && (
             <div className="Request-mapbox" ref={this.mapRef}>
-              <MapCard {...this.state.map} />
+              <MapCard {...this.state.map} admin={this.props.user.admin} />
             </div>
           )}
 

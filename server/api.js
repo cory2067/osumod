@@ -122,7 +122,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       requestDate: now,
     });
     await request.save();
-    if ((await Request.count({ status: "Pending" })) >= settings.maxPending) {
+    if ((await Request.countDocuments({ status: "Pending" })) >= settings.maxPending) {
       logger.info(`Now closing requests`);
       await Settings.updateOne({}, { $set: { open: false } });
     }
@@ -151,6 +151,16 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} deleted their request ${req.body.id}`);
   await Request.deleteOne({ _id: req.body.id, user: req.user.userid });
   res.send({});
+});
+
+router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
+  logger.info(`${req.user.username} edited request ${req.body.id}`);
+  const updated = await Request.findOneAndUpdate(
+    { _id: req.body.id },
+    { $set: { feedback: req.body.feedback, status: req.body.status } },
+    { new: true }
+  );
+  res.send(updated);
 });
 
 /**
