@@ -15,19 +15,6 @@ const round = (num) => Math.round(num * 100) / 100;
 const formatTime = (time) =>
   Math.floor(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + Math.floor(time % 60);
 
-const checkPermissions = (req, roles) => {
-  const tourney = req.query.tourney || req.body.tourney;
-
-  return (
-    req.user &&
-    req.user.username &&
-    (req.user.admin ||
-      req.user.roles.some(
-        (r) => ["Host", "Developer", ...roles].includes(r.role) && r.tourney == tourney
-      ))
-  );
-};
-
 /**
  * POST /api/request
  * Submit a new request

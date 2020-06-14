@@ -68,10 +68,6 @@
   margin-right: var(--m);
 }
 
-.MapCard-status.admin {
-  cursor: pointer;
-}
-
 .MapCard-diff-list {
   display: flex;
   flex-wrap: wrap;

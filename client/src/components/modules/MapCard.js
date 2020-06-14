@@ -46,7 +46,7 @@ class MapCard extends Component {
               <StatusIcon
                 twoToneColor={colors[this.props.status]}
                 onClick={() => this.props.edit && this.props.edit(this.props)}
-                className={`MapCard-status ${this.props.admin ? "admin" : ""}`}
+                className="MapCard-status"
               />
               {` ${this.props.status}`}
             </div>
@@ -81,6 +81,16 @@ class MapCard extends Component {
             <div className="MapCard-comment">
               <span className="u-bold">Mapper's Comment: </span>
               {this.props.comment}
+            </div>
+          </>
+        )}
+
+        {this.props.feedback && (
+          <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-comment">
+              <span className="u-bold">Feedback: </span>
+              {this.props.feedback}
             </div>
           </>
         )}

@@ -23,6 +23,7 @@ class List extends Component {
   }
 
   edit = (req) => {
+    if (!this.props.user.admin) return;
     this.setState({ editing: req._id });
     // this is jank, todo fix this
     setTimeout(() => this.form.current.setFieldsValue(req));
