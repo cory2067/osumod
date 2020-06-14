@@ -61,7 +61,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push("I'm a taiko BN");
   }
 
-  if (taikos.length < map.diffs.length) {
+  if (taikos.length > 0 && taikos.length < map.diffs.length) {
     errors.push("I can't nominate hybrid sets");
   }
 
