@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
 import "../../utilities.css";
 import "./Request.css";
-import { post } from "../../utilities";
+import { post, get, delet } from "../../utilities";
 import MapCard from "../modules/MapCard";
 import { CloseCircleTwoTone } from "@ant-design/icons";
 // data from "../../content/home-en";
 import { Layout, Result, Form, Input, message, Button, Switch } from "antd";
 import TextArea from "antd/lib/input/TextArea";
+import { navigate } from "@reach/router";
 
 const { Content } = Layout;
 
@@ -31,11 +32,13 @@ class Request extends Component {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
-    this.state = { loading: false };
+    this.state = { loading: false, open: false, pageReady: false };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     document.title = "osumod";
+    const settings = await get("/api/settings");
+    this.setState({ open: settings.open, pageReady: true });
   }
 
   onFinish = async (form) => {
@@ -67,9 +70,22 @@ class Request extends Component {
     this.setState({ loading: false });
   };
 
-  loggedIn = () => this.props.user && this.props.user._id;
+  undo = async () => {
+    if (this.state.map) {
+      await delet("/api/request", { id: this.state.map._id });
+      message.info(`Request cancelled`);
+      this.setState({ map: null, errors: null });
+    }
+  };
+
+  canRequest = () => this.state.open && this.props.user._id;
 
   render() {
+    let button = "Request";
+    if (!this.state.pageReady) button = "Loading...";
+    else if (!this.state.open) button = "Requests Closed";
+    else if (!this.props.user._id) button = "Login to Request";
+
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Request-container">
@@ -93,9 +109,9 @@ class Request extends Component {
                   type="primary"
                   htmlType="submit"
                   loading={this.state.loading}
-                  disabled={!this.loggedIn()}
+                  disabled={!this.canRequest()}
                 >
-                  {this.loggedIn() ? "Submit" : "Login to Submit"}
+                  {button}
                 </Button>
               </Form.Item>
             </Form>
@@ -113,10 +129,12 @@ class Request extends Component {
                   status="success"
                   title="Successfully submitted request!"
                   extra={[
-                    <Button type="primary" key="console">
+                    <Button type="primary" key="view" onClick={() => navigate("/")}>
                       View Requests
                     </Button>,
-                    <Button key="buy">Undo</Button>,
+                    <Button key="undo" onClick={this.undo}>
+                      Undo
+                    </Button>,
                   ]}
                 />
               ) : (

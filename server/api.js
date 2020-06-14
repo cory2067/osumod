@@ -6,6 +6,7 @@ const osuApi = new osu.Api(process.env.OSU_API_KEY);
 const ensure = require("./ensure");
 const User = require("./models/user");
 const Request = require("./models/request");
+const Settings = require("./models/settings");
 
 const { addAsync } = require("@awaitjs/express");
 const router = addAsync(express.Router());
@@ -90,11 +91,18 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
   }
 
   const now = new Date();
-  const lastReq = await Request.findOne({ user: req.user.userid }).sort({ requestDate: -1 });
+  const [settings, lastReq] = await Promise.all([
+    Settings.findOne(),
+    Request.findOne({ user: req.user.userid }).sort({ requestDate: -1 }),
+  ]);
+
+  if (!settings.open) {
+    errors.push("Requests are closed");
+  }
+
   if (lastReq) {
     const diff = now.getTime() - lastReq.requestDate.getTime();
-    const minWait = 14 * 24 * 3600 * 1000;
-    // todo put minWait into some config file/interface
+    const minWait = settings.cooldown * 24 * 3600 * 1000;
     if (diff < minWait) {
       errors.push(
         `You need to wait ${round(
@@ -106,6 +114,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
 
   if (errors.length) {
     logger.info(`${req.user.username} caused these errors: ${errors.join(", ")}`);
+    res.send({ map, errors });
   } else {
     const request = new Request({
       ...map,
@@ -113,9 +122,14 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       requestDate: now,
     });
     await request.save();
+    if ((await Request.count({ status: "Pending" })) >= settings.maxPending) {
+      logger.info(`Now closing requests`);
+      await Settings.updateOne({}, { $set: { open: false } });
+    }
+
     logger.info(`${req.user.username} succesfully requested ${map.title}`);
+    res.send({ map: request, errors });
   }
-  res.send({ map, errors });
 });
 
 /**
@@ -133,10 +147,18 @@ router.getAsync("/requests", async (req, res) => {
  * Params:
  *   - id: ID of the request
  */
-router.deleteAsync("/map", ensure.loggedIn, async (req, res) => {
-  logger.info(`${req.user.username} deleted their request`);
-  await Map.deleteOne({ _id: req.body.id, user: req.user.userid });
+router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
+  logger.info(`${req.user.username} deleted their request ${req.body.id}`);
+  await Request.deleteOne({ _id: req.body.id, user: req.user.userid });
   res.send({});
+});
+
+/**
+ * GET /api/settings
+ * Get request settings/status
+ */
+router.getAsync("/settings", async (req, res) => {
+  res.send(await Settings.findOne());
 });
 
 /**
