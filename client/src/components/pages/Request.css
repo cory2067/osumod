@@ -7,10 +7,6 @@
   max-width: 800px;
 }
 
-.Request-input {
-  width: 350px !important;
-}
-
 .Request-mapbox {
   margin-top: var(--l);
   animation: fadeIn ease 1s;
@@ -23,4 +19,18 @@
   100% {
     opacity: 1;
   }
+}
+
+.Request-error {
+  background-color: white;
+  margin-top: var(--l);
+}
+
+.Request-form {
+  background-color: white;
+  padding: var(--m);
+}
+
+.Request-form form {
+  width: 500px;
 }

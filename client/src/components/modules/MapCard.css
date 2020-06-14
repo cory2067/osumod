@@ -9,10 +9,6 @@
   width: 100%;
 }
 
-.MapCard-inside {
-  display: flex;
-}
-
 .MapCard-card .ant-card-body {
   padding: var(--s) var(--m);
 }
@@ -24,7 +20,7 @@
 .MapCard-title {
   font-size: 24px;
   display: flex;
-  align-items: center;
+  justify-content: space-between;
 }
 
 .MapCard-icon {
@@ -52,17 +48,19 @@
   height: var(--m);
 }
 
-.MapCard-attr-row {
-  display: flex;
-}
-
 .MapCard-attr {
   margin: 0px var(--s);
   font-size: 13pt;
 }
 
-.MapCard-small {
+.MapCard-mod-type {
+  color: rgb(180, 180, 180);
+}
+
+.MapCard-comment {
   font-size: 11pt;
+  max-width: 600px;
+  overflow-wrap: break-word;
   color: rgb(125, 125, 125);
 }
 

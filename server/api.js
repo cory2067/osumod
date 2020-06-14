@@ -59,6 +59,8 @@ router.postAsync("/map", ensure.loggedIn, async (req, res) => {
     creator: mapData[0].creator,
     bpm: parseFloat(mapData[0].bpm),
     length: formatTime(parseInt(mapData[0].length.total)),
+    comment: req.body.comment,
+    m4m: req.body.m4m,
     diffs: mapData
       .map((diff) => ({
         name: diff.version,

@@ -21,7 +21,10 @@ class MapCard extends Component {
       <Card
         title={
           <div className="MapCard-title">
-            <InfoCircleTwoTone className="MapCard-status" /> Pending
+            <div>
+              <InfoCircleTwoTone className="MapCard-status" /> Pending
+            </div>
+            <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
           </div>
         }
         bordered={true}
@@ -45,6 +48,16 @@ class MapCard extends Component {
         </div>
         <div className="MapCard-row">{this.props.artist}</div>
         <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
+
+        {this.props.comment && (
+          <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-comment">
+              <span class="u-bold">Comment: </span>
+              {this.props.comment}
+            </div>
+          </>
+        )}
 
         <div className="MapCard-divider"></div>
         <div className="MapCard-diff-list">
