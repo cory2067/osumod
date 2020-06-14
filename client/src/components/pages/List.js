@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import ReactMarkdown from "react-markdown";
 import "../../utilities.css";
-import "./Home.css";
+import "./List.css";
 
 // data from "../../content/home-en";
 import { Layout, Card } from "antd";
 const { Content } = Layout;
 
-class Home extends Component {
+class List extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -22,4 +22,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default List;

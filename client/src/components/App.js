@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Router } from "@reach/router";
 import NotFound from "./pages/NotFound.js";
-import Home from "./pages/Home.js";
+import List from "./pages/List.js";
 import Request from "./pages/Request";
 import Navbar from "./modules/Navbar";
 import { get } from "../utilities";
@@ -34,8 +34,8 @@ class App extends Component {
         <Layout>
           <Navbar user={this.state.user} updateUser={this.updateUser} />
           <Router primary={false}>
-            <Home path="/" />
-            <Request path="/request" />
+            <List path="/" user={this.state.user} />
+            <Request path="/request" user={this.state.user} />
             <NotFound default />
           </Router>
           <Footer></Footer>

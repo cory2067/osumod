@@ -6,25 +6,7 @@ const UserSchema = new mongoose.Schema({
   country: String,
   avatar: String,
   discord: String,
-  timezone: Number,
-  rank: Number,
   admin: Boolean,
-  roles: [
-    {
-      tourney: String,
-      role: String,
-    },
-  ],
-  stats: [
-    {
-      tourney: String,
-      seedName: String,
-      seedNum: Number,
-      group: String,
-      regTime: Date,
-    },
-  ],
-  tournies: [String], // map from tourney code to list of roles
 });
 
 // compile model from schema

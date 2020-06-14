@@ -31,7 +31,7 @@ class Request extends Component {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
-    this.state = { loading: false, errors: [] };
+    this.state = { loading: false };
   }
 
   componentDidMount() {
@@ -39,27 +39,35 @@ class Request extends Component {
   }
 
   onFinish = async (form) => {
-    console.log(form);
     const link = form.link;
     const regex = /.*(osu|old)\.ppy\.sh\/(b|s|beatmapsets)\/([0-9]+).*/g;
     const match = regex.exec(link);
     if (!match || !match[3]) {
-      return message.error("Invalid beatmap link");
+      return message.error("Please enter a beatmap link");
     }
 
     this.setState({ loading: true });
     try {
-      const map = await post("/api/map", { ...form, id: match[3] });
+      const { map, errors } = await post("/api/request", { ...form, id: match[3] });
       console.log(map);
-      this.setState({ map });
-      this.mapRef.current.scrollIntoView({
-        behavior: "smooth",
-      });
+      this.setState({ map, errors });
+      if (map) {
+        setTimeout(
+          () =>
+            this.mapRef.current.scrollIntoView({
+              behavior: "smooth",
+            }),
+          250
+        );
+      }
     } catch (e) {
-      this.fail(e.msg);
+      message.error(`An unexpected error has occurred`);
+      console.log(e);
     }
-    this.setState({ loading: false, errors: ["Your map sucks"] });
+    this.setState({ loading: false });
   };
+
+  loggedIn = () => this.props.user && this.props.user._id;
 
   render() {
     return (
@@ -81,17 +89,25 @@ class Request extends Component {
               </Form.Item>
 
               <Form.Item style={{ float: "right" }}>
-                <Button type="primary" htmlType="submit" loading={this.state.loading}>
-                  Submit
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={this.state.loading}
+                  disabled={!this.loggedIn()}
+                >
+                  {this.loggedIn() ? "Submit" : "Login to Submit"}
                 </Button>
               </Form.Item>
             </Form>
           </div>
-
           {this.state.map && (
             <div className="Request-mapbox" ref={this.mapRef}>
               <MapCard {...this.state.map} />
+            </div>
+          )}
 
+          {this.state.errors && (
+            <div className="Request-error">
               {this.state.errors.length === 0 ? (
                 <Result
                   status="success"

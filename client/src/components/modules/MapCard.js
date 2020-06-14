@@ -53,7 +53,7 @@ class MapCard extends Component {
           <>
             <div className="MapCard-divider"></div>
             <div className="MapCard-comment">
-              <span class="u-bold">Comment: </span>
+              <span class="u-bold">Mapper's Comment: </span>
               {this.props.comment}
             </div>
           </>

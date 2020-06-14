@@ -24,6 +24,7 @@
 .Request-error {
   background-color: white;
   margin-top: var(--l);
+  animation: fadeIn ease 1s;
 }
 
 .Request-form {
