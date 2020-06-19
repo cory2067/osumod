@@ -162,6 +162,17 @@ router.getAsync("/settings", async (req, res) => {
 });
 
 /**
+ * POST /api/open
+ * Set requests open/closed
+ * Params:
+ *   - open: true for requests open, false for requests closed
+ */
+router.postAsync("/open", ensure.isAdmin, async (req, res) => {
+  await Settings.findOneAndUpdate({}, { $set: { open: req.body.open } });
+  res.send({});
+});
+
+/**
  * GET /api/whoami
  * Returns the identity of the currently logged in user
  */

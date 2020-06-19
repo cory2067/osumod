@@ -77,3 +77,7 @@ form {
 .u-link:hover {
   color: var(--primary--dim);
 }
+
+.u-spacer {
+  margin: var(--m);
+}

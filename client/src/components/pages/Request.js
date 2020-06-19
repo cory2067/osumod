@@ -70,6 +70,11 @@ class Request extends Component {
     }
   };
 
+  toggleOpen = (open) => {
+    this.setState({ open });
+    post("/api/open", { open });
+  };
+
   canRequest = () => (this.state.open && this.props.user._id) || this.props.user.admin;
 
   render() {
@@ -82,6 +87,17 @@ class Request extends Component {
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Request-container">
+          {this.props.user.admin && (
+            <div>
+              <Switch
+                checked={this.state.open}
+                onClick={this.toggleOpen}
+                checkedChildren="Open"
+                unCheckedChildren="Closed"
+              />
+              <div className="u-spacer"></div>
+            </div>
+          )}
           <div className="Request-form">
             <h1>Nomination Request</h1>
             <Form {...layout} name="request" onFinish={this.onFinish}>
