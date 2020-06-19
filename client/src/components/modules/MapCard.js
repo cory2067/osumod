@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { Link } from "@reach/router";
 
-import { Card, Popconfirm } from "antd";
+import { Card, Tooltip } from "antd";
 import "./MapCard.css";
 
 const icons = {
@@ -48,7 +48,9 @@ class MapCard extends Component {
                 onClick={() => this.props.edit && this.props.edit(this.props)}
                 className="MapCard-status"
               />
-              {` ${this.props.status}`}
+              <Tooltip
+                title={`Requested ${new Date(this.props.requestDate).toLocaleDateString("en-US")}`}
+              >{` ${this.props.status}`}</Tooltip>
             </div>
             <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
           </div>

@@ -70,11 +70,12 @@ class Request extends Component {
     }
   };
 
-  canRequest = () => this.state.open && this.props.user._id;
+  canRequest = () => (this.state.open && this.props.user._id) || this.props.user.admin;
 
   render() {
     let button = "Request";
     if (!this.state.pageReady) button = "Loading...";
+    else if (this.props.user.admin) button = "Request";
     else if (!this.state.open) button = "Requests Closed";
     else if (!this.props.user._id) button = "Login to Request";
 

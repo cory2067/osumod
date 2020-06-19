@@ -55,7 +55,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
   };
 
-  const errors = [];
+  let errors = [];
   const taikos = map.diffs.filter((diff) => diff.mode === "Taiko");
   if (taikos.length === 0) {
     errors.push("I'm a taiko BN");
@@ -99,6 +99,9 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     }
   }
 
+  // admin can bypass all restrictions
+  if (req.user.admin) errors = [];
+
   if (errors.length) {
     logger.info(`${req.user.username} caused these errors: ${errors.join(", ")}`);
     res.send({ map, errors });
@@ -124,7 +127,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
  * Get all requests
  */
 router.getAsync("/requests", async (req, res) => {
-  const requests = await Request.find();
+  const requests = await Request.find().sort({ requestDate: -1 });
   res.send(requests);
 });
 
