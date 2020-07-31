@@ -4,7 +4,7 @@ import "../../utilities.css";
 import "./List.css";
 
 // data from "../../content/home-en";
-import { Layout, Button, Modal, Input, Form, Select } from "antd";
+import { Layout, Button, Modal, Input, Form, Select, Switch } from "antd";
 const { TextArea } = Input;
 import { get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
@@ -18,7 +18,7 @@ class List extends Component {
   }
 
   async componentDidMount() {
-    const reqs = await get("/api/requests");
+    const reqs = await get("/api/requests", { archived: this.props.archived });
     this.setState({ reqs });
   }
 
@@ -26,7 +26,7 @@ class List extends Component {
     if (!this.props.user.admin) return;
     this.setState({ editing: req._id });
     // this is jank, todo fix this
-    setTimeout(() => this.form.current.setFieldsValue(req));
+    setTimeout(() => this.form.current.setFieldsValue({ feedback: "", ...req }));
   };
 
   onFinish = async (form) => {
@@ -44,7 +44,13 @@ class List extends Component {
       <Content className="content">
         <div className="List-container">
           {this.state.reqs.map((req) => (
-            <MapCard {...req} admin={this.props.user.admin} edit={this.edit} key={req._id} />
+            <MapCard
+              {...req}
+              admin={this.props.user.admin}
+              edit={this.edit}
+              key={req._id}
+              compact={this.props.archived}
+            />
           ))}
         </div>
         <Modal
@@ -65,6 +71,9 @@ class List extends Component {
             </Form.Item>
             <Form.Item label="Feedback" name="feedback">
               <TextArea rows={3} />
+            </Form.Item>
+            <Form.Item label="Archived" name="archived" valuePropName="checked">
+              <Switch />
             </Form.Item>
             <Form.Item>
               <Button type="primary" htmlType="submit">

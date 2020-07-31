@@ -34,7 +34,8 @@ class App extends Component {
         <Layout>
           <Navbar user={this.state.user} updateUser={this.updateUser} />
           <Router primary={false}>
-            <List path="/" user={this.state.user} />
+            <List path="/" user={this.state.user} archived={false} />
+            <List path="/archives" user={this.state.user} archived={true} />
             <Request path="/request" user={this.state.user} />
             <NotFound default />
           </Router>

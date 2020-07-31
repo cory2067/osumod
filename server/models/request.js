@@ -15,6 +15,7 @@ const RequestSchema = new mongoose.Schema({
   diffs: [{ name: String, mode: String, sr: Number }],
   status: String,
   image: String,
+  archived: Boolean,
 });
 
 module.exports = mongoose.model("Request", RequestSchema);

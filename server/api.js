@@ -125,9 +125,11 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
 /**
  * GET /api/requests
  * Get all requests
+ * params:
+ *   - archived: get archived requests
  */
 router.getAsync("/requests", async (req, res) => {
-  const requests = await Request.find().sort({ requestDate: -1 });
+  const requests = await Request.find({ archived: req.query.archived }).sort({ requestDate: -1 });
   res.send(requests);
 });
 
@@ -147,7 +149,7 @@ router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
   logger.info(`${req.user.username} edited request ${req.body.id}`);
   const updated = await Request.findOneAndUpdate(
     { _id: req.body.id },
-    { $set: { feedback: req.body.feedback, status: req.body.status } },
+    { $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived } },
     { new: true }
   );
   res.send(updated);

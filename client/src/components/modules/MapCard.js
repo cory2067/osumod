@@ -97,17 +97,21 @@ class MapCard extends Component {
           </>
         )}
 
-        <div className="MapCard-divider"></div>
-        <div className="MapCard-diff-list">
-          {this.props.diffs.map((diff) => (
-            <div key={diff.name} className="MapCard-diff">
-              <div className="u-bold">{diff.name}</div>
-              <div>
-                {diff.sr} <StarOutlined />
-              </div>
+        {!this.props.compact && (
+          <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-diff-list">
+              {this.props.diffs.map((diff) => (
+                <div key={diff.name} className="MapCard-diff">
+                  <div className="u-bold">{diff.name}</div>
+                  <div>
+                    {diff.sr} <StarOutlined />
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </>
+        )}
       </Card>
     );
   }
