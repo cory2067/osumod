@@ -5,6 +5,8 @@ const SettingsSchema = new mongoose.Schema({
   open: Boolean,
   maxPending: Number,
   cooldown: Number,
+  probation: Boolean,
+  owner: String,
 });
 
 module.exports = mongoose.model("Settings", SettingsSchema);

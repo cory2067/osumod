@@ -16,6 +16,7 @@ const RequestSchema = new mongoose.Schema({
   status: String,
   image: String,
   archived: Boolean,
+  target: String,
 });
 
 module.exports = mongoose.model("Request", RequestSchema);

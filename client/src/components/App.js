@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Router } from "@reach/router";
+import { Router, Redirect } from "@reach/router";
 import NotFound from "./pages/NotFound.js";
 import List from "./pages/List.js";
 import Request from "./pages/Request";
@@ -11,6 +11,8 @@ import "../utilities.css";
 import { Layout } from "antd";
 import "antd/dist/antd.css";
 const { Footer } = Layout;
+
+const DEFAULT_ID = "Cychloryn";
 
 class App extends Component {
   constructor(props) {
@@ -34,9 +36,13 @@ class App extends Component {
         <Layout>
           <Navbar user={this.state.user} updateUser={this.updateUser} />
           <Router primary={false}>
-            <List path="/" user={this.state.user} archived={false} />
-            <List path="/archives" user={this.state.user} archived={true} />
-            <Request path="/request" user={this.state.user} />
+            <Redirect from="/" to={`${DEFAULT_ID}/`} />
+            <Redirect from="/archives" to={`${DEFAULT_ID}/archives`} />
+            <Redirect from="/request" to={`${DEFAULT_ID}/request`} />
+
+            <List path="/:owner" user={this.state.user} archived={false} />
+            <List path="/:owner/archives" user={this.state.user} archived={true} />
+            <Request path="/:owner/request" user={this.state.user} />
             <NotFound default />
           </Router>
           <Footer></Footer>

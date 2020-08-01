@@ -22,6 +22,7 @@ const formatTime = (time) =>
  *   - id: ID of the mapset
  *   - comment: comments by the requester
  *   - m4m: is this a m4m request
+ *   - target: whose queue to request
  * Returns the newly-created Map document
  */
 router.postAsync("/request", ensure.loggedIn, async (req, res) => {
@@ -61,10 +62,6 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push("I'm a taiko BN");
   }
 
-  if (taikos.length > 0 && taikos.length < map.diffs.length) {
-    errors.push("I can't nominate hybrid sets");
-  }
-
   if (map.status !== "Pending") {
     errors.push(`Expected a Pending map (this is ${map.status})`);
   }
@@ -79,9 +76,13 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
 
   const now = new Date();
   const [settings, lastReq] = await Promise.all([
-    Settings.findOne(),
-    Request.findOne({ user: req.user.userid }).sort({ requestDate: -1 }),
+    Settings.findOne({ owner: req.body.target }),
+    Request.findOne({ user: req.user.userid, target: req.body.target }).sort({ requestDate: -1 }),
   ]);
+
+  if (settings.probation && taikos.length > 0 && taikos.length < map.diffs.length) {
+    errors.push("I can't nominate hybrid sets");
+  }
 
   if (!settings.open) {
     errors.push("Requests are closed");
@@ -99,8 +100,8 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     }
   }
 
-  // admin can bypass all restrictions
-  if (req.user.admin) errors = [];
+  // owner can bypass all restrictions
+  if (req.user.username === req.body.target) errors = [];
 
   if (errors.length) {
     logger.info(`${req.user.username} caused these errors: ${errors.join(", ")}`);
@@ -110,14 +111,18 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       ...map,
       user: req.user.userid,
       requestDate: now,
+      target: req.body.target,
+      archived: false,
     });
     await request.save();
-    if ((await Request.countDocuments({ status: "Pending" })) >= settings.maxPending) {
+
+    const numPending = await Request.countDocuments({ status: "Pending", target: req.body.target });
+    if (numPending >= settings.maxPending) {
       logger.info(`Now closing requests`);
-      await Settings.updateOne({}, { $set: { open: false } });
+      await Settings.updateOne({ owner: req.body.target }, { $set: { open: false } });
     }
 
-    logger.info(`${req.user.username} succesfully requested ${map.title}`);
+    logger.info(`${req.user.username} succesfully requested ${map.title} to ${req.body.target}`);
     res.send({ map: request, errors });
   }
 });
@@ -127,9 +132,13 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
  * Get all requests
  * params:
  *   - archived: get archived requests
+ *   - target: whose queue to retrieve
  */
 router.getAsync("/requests", async (req, res) => {
-  const requests = await Request.find({ archived: req.query.archived }).sort({ requestDate: -1 });
+  const requests = await Request.find({
+    target: req.query.target,
+    archived: req.query.archived,
+  }).sort({ requestDate: -1 });
   res.send(requests);
 });
 
@@ -145,6 +154,14 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
   res.send({});
 });
 
+/**
+ * POST /api/request-edit
+ * Edit an existing request
+ * Params:
+ *   - feedback: Some feedback by the queue owner
+ *   - status: request status (e.g. accepted, rejected, nominated)
+ *   - archived: whether the request is archived
+ */
 router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
   logger.info(`${req.user.username} edited request ${req.body.id}`);
   const updated = await Request.findOneAndUpdate(
@@ -158,9 +175,11 @@ router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
 /**
  * GET /api/settings
  * Get request settings/status
+ * params:
+ *   - owner: owner of the queue
  */
 router.getAsync("/settings", async (req, res) => {
-  res.send(await Settings.findOne());
+  res.send(await Settings.findOne({ owner: req.query.owner }));
 });
 
 /**
@@ -168,9 +187,10 @@ router.getAsync("/settings", async (req, res) => {
  * Set requests open/closed
  * Params:
  *   - open: true for requests open, false for requests closed
+ *   - owner: owner of the queue
  */
 router.postAsync("/open", ensure.isAdmin, async (req, res) => {
-  await Settings.findOneAndUpdate({}, { $set: { open: req.body.open } });
+  await Settings.findOneAndUpdate({ owner: req.query.owner }, { $set: { open: req.body.open } });
   res.send({});
 });
 

@@ -18,7 +18,10 @@ class List extends Component {
   }
 
   async componentDidMount() {
-    const reqs = await get("/api/requests", { archived: this.props.archived });
+    const reqs = await get("/api/requests", {
+      archived: this.props.archived,
+      target: this.props.owner,
+    });
     this.setState({ reqs });
   }
 
@@ -42,6 +45,9 @@ class List extends Component {
   render() {
     return (
       <Content className="content">
+        <h1 className="List-header">
+          {this.props.owner}'s {this.props.archived ? "Archives" : "Queue"}
+        </h1>
         <div className="List-container">
           {this.state.reqs.map((req) => (
             <MapCard

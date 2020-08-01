@@ -2,3 +2,4 @@ node_modules
 client/dist/*bundle.js*
 .env
 logs.txt
+backups

@@ -15,18 +15,19 @@ class Navbar extends Component {
   }
 
   render() {
+    const owner = window.location.pathname.split("/")[1];
     return (
       <>
         <Header>
           <Menu theme="dark" mode="horizontal" selectable={false}>
             <Menu.Item key="1">
-              <Link to="/">Home</Link>
+              <Link to={`${owner}/`}>Home</Link>
             </Menu.Item>
             <Menu.Item key="2">
-              <Link to="/request">Request</Link>
+              <Link to={`${owner}/request`}>Request</Link>
             </Menu.Item>
             <Menu.Item key="3">
-              <Link to="/archives">Archives</Link>
+              <Link to={`${owner}/archives`}>Archives</Link>
             </Menu.Item>
             <Menu.Item key="4">
               <LoginButton {...this.props} />

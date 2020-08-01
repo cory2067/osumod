@@ -1,6 +1,10 @@
 .List-container {
-  margin-top: var(--l);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+
+.List-header {
+  font-size: 22pt;
+  text-align: center;
 }

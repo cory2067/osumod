@@ -29,7 +29,7 @@ class Request extends Component {
   }
 
   async componentDidMount() {
-    const settings = await get("/api/settings");
+    const settings = await get("/api/settings", { owner: this.props.owner });
     this.setState({ open: settings.open, pageReady: true });
   }
 
@@ -43,7 +43,11 @@ class Request extends Component {
 
     this.setState({ loading: true });
     try {
-      const { map, errors } = await post("/api/request", { ...form, id: match[3] });
+      const { map, errors } = await post("/api/request", {
+        ...form,
+        id: match[3],
+        target: this.props.owner,
+      });
       console.log(map);
       this.setState({ map, errors });
       if (map) {
@@ -72,22 +76,23 @@ class Request extends Component {
 
   toggleOpen = (open) => {
     this.setState({ open });
-    post("/api/open", { open });
+    post("/api/open", { open, owner: this.props.owner });
   };
 
-  canRequest = () => (this.state.open && this.props.user._id) || this.props.user.admin;
+  isOwner = () => this.props.owner === this.props.user.username;
+  canRequest = () => (this.state.open && this.props.user._id) || this.isOwner();
 
   render() {
     let button = "Request";
     if (!this.state.pageReady) button = "Loading...";
-    else if (this.props.user.admin) button = "Request";
+    else if (this.isOwner()) button = "Request";
     else if (!this.state.open) button = "Requests Closed";
     else if (!this.props.user._id) button = "Login to Request";
 
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Request-container">
-          {this.props.user.admin && (
+          {this.isOwner() && (
             <div>
               <Switch
                 checked={this.state.open}
@@ -99,7 +104,7 @@ class Request extends Component {
             </div>
           )}
           <div className="Request-form">
-            <h1>Nomination Request</h1>
+            <h1>{this.props.owner}'s Request Form</h1>
             <Form {...layout} name="request" onFinish={this.onFinish}>
               <Form.Item label="Map Link" name="link">
                 <Input />
@@ -138,7 +143,11 @@ class Request extends Component {
                   status="success"
                   title="Successfully submitted request!"
                   extra={[
-                    <Button type="primary" key="view" onClick={() => navigate("/")}>
+                    <Button
+                      type="primary"
+                      key="view"
+                      onClick={() => navigate(`/${this.props.owner}`)}
+                    >
                       View Requests
                     </Button>,
                     <Button key="undo" onClick={this.undo}>
