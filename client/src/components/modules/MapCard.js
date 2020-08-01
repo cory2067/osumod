@@ -67,38 +67,38 @@ class MapCard extends Component {
         <div className="MapCard-row">{this.props.artist}</div>
         <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
 
-        <div className="MapCard-divider"></div>
-        <div className="MapCard-attr-list">
-          <span className="MapCard-attr">
-            <ClockCircleTwoTone /> {this.props.length}
-          </span>
-          <span className="MapCard-attr">
-            <DashboardTwoTone /> {this.props.bpm}bpm
-          </span>
-        </div>
-
-        {this.props.comment && (
-          <>
-            <div className="MapCard-divider"></div>
-            <div className="MapCard-comment">
-              <span className="u-bold">Mapper's Comment: </span>
-              {this.props.comment}
-            </div>
-          </>
-        )}
-
-        {this.props.feedback && (
-          <>
-            <div className="MapCard-divider"></div>
-            <div className="MapCard-comment">
-              <span className="u-bold">Feedback: </span>
-              {this.props.feedback}
-            </div>
-          </>
-        )}
-
         {!this.props.compact && (
           <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-attr-list">
+              <span className="MapCard-attr">
+                <ClockCircleTwoTone /> {this.props.length}
+              </span>
+              <span className="MapCard-attr">
+                <DashboardTwoTone /> {this.props.bpm}bpm
+              </span>
+            </div>
+
+            {this.props.comment && (
+              <>
+                <div className="MapCard-divider"></div>
+                <div className="MapCard-comment">
+                  <span className="u-bold">Mapper's Comment: </span>
+                  {this.props.comment}
+                </div>
+              </>
+            )}
+
+            {this.props.feedback && (
+              <>
+                <div className="MapCard-divider"></div>
+                <div className="MapCard-comment">
+                  <span className="u-bold">Feedback: </span>
+                  {this.props.feedback}
+                </div>
+              </>
+            )}
+
             <div className="MapCard-divider"></div>
             <div className="MapCard-diff-list">
               {this.props.diffs.map((diff) => (
