@@ -25,12 +25,12 @@ class Request extends Component {
   constructor(props) {
     super(props);
     this.mapRef = React.createRef();
-    this.state = { loading: false, open: false, pageReady: false };
+    this.state = { loading: false, pageReady: false };
   }
 
   async componentDidMount() {
     const settings = await get("/api/settings", { owner: this.props.owner });
-    this.setState({ open: settings.open, pageReady: true });
+    this.setState({ ...settings, pageReady: true });
   }
 
   onFinish = async (form) => {
@@ -114,9 +114,11 @@ class Request extends Component {
                 <TextArea rows={3} />
               </Form.Item>
 
-              <Form.Item label="Can M4M" name="m4m" valuePropName="checked">
-                <Switch checkedChildren="Yes" unCheckedChildren="No" />
-              </Form.Item>
+              {this.state.m4m && (
+                <Form.Item label="Can M4M" name="m4m" valuePropName="checked">
+                  <Switch checkedChildren="Yes" unCheckedChildren="No" />
+                </Form.Item>
+              )}
 
               <Form.Item style={{ float: "right" }}>
                 <Button

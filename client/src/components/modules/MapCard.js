@@ -52,7 +52,9 @@ class MapCard extends Component {
                 title={`Requested ${new Date(this.props.requestDate).toLocaleDateString("en-US")}`}
               >{` ${this.props.status}`}</Tooltip>
             </div>
-            <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
+            {this.props.showModType && (
+              <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
+            )}
           </div>
         }
         bordered={true}

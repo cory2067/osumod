@@ -17,12 +17,15 @@ class List extends Component {
     this.state = { reqs: [], editing: null };
   }
 
-  async componentDidMount() {
-    const reqs = await get("/api/requests", {
+  componentDidMount() {
+    get("/api/requests", {
       archived: this.props.archived,
       target: this.props.owner,
-    });
-    this.setState({ reqs });
+    }).then((reqs) => this.setState({ reqs }));
+
+    get("/api/settings", { owner: this.props.owner }).then((settings) =>
+      this.setState({ m4m: settings.m4m })
+    );
   }
 
   edit = (req) => {
@@ -46,7 +49,7 @@ class List extends Component {
     return (
       <Content className="content">
         <h1 className="List-header">
-          {this.props.owner}'s {this.props.archived ? "Archives" : "Queue"}
+          {this.props.owner}'s {this.props.archived ? "Archives" : "Nomination Queue"}
         </h1>
         <div className="List-container">
           {this.state.reqs.map((req) => (
@@ -56,6 +59,7 @@ class List extends Component {
               edit={this.edit}
               key={req._id}
               compact={this.props.archived}
+              showModType={this.state.m4m && !this.props.archived}
             />
           ))}
         </div>

@@ -6,6 +6,7 @@ const SettingsSchema = new mongoose.Schema({
   maxPending: Number,
   cooldown: Number,
   probation: Boolean,
+  m4m: Boolean,
   owner: String,
 });
 
