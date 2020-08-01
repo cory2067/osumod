@@ -190,7 +190,7 @@ router.getAsync("/settings", async (req, res) => {
  *   - owner: owner of the queue
  */
 router.postAsync("/open", ensure.isAdmin, async (req, res) => {
-  await Settings.findOneAndUpdate({ owner: req.query.owner }, { $set: { open: req.body.open } });
+  await Settings.findOneAndUpdate({ owner: req.body.owner }, { $set: { open: req.body.open } });
   res.send({});
 });
 
