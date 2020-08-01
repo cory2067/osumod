@@ -90,17 +90,21 @@ class MapCard extends Component {
                 </div>
               </>
             )}
+          </>
+        )}
 
-            {this.props.feedback && (
-              <>
-                <div className="MapCard-divider"></div>
-                <div className="MapCard-comment">
-                  <span className="u-bold">Feedback: </span>
-                  {this.props.feedback}
-                </div>
-              </>
-            )}
+        {this.props.feedback && (
+          <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-comment">
+              <span className="u-bold">Feedback: </span>
+              {this.props.feedback}
+            </div>
+          </>
+        )}
 
+        {!this.props.compact && (
+          <>
             <div className="MapCard-divider"></div>
             <div className="MapCard-diff-list">
               {this.props.diffs.map((diff) => (
