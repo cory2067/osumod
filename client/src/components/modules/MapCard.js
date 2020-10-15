@@ -19,6 +19,7 @@ const icons = {
   Rejected: CloseCircleTwoTone,
   Accepted: CheckCircleTwoTone,
   Nominated: LikeTwoTone,
+  Finished: LikeTwoTone,
   Ranked: HeartTwoTone,
 };
 

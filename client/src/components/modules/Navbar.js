@@ -29,6 +29,11 @@ class Navbar extends Component {
             <Menu.Item key="3">
               <Link to={`${owner}/archives`}>Archives</Link>
             </Menu.Item>
+            {this.props.user.admin && this.props.user.username === owner && (
+              <Menu.Item key="settings">
+                <Link to={`${owner}/settings`}>Settings</Link>
+              </Menu.Item>
+            )}
             <Menu.Item key="4">
               <LoginButton {...this.props} />
             </Menu.Item>

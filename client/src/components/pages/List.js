@@ -24,12 +24,12 @@ class List extends Component {
     }).then((reqs) => this.setState({ reqs }));
 
     get("/api/settings", { owner: this.props.owner }).then((settings) =>
-      this.setState({ m4m: settings.m4m })
+      this.setState({ m4m: settings.m4m, modderType: settings.modderType })
     );
   }
 
   edit = (req) => {
-    if (!this.props.user.admin) return;
+    if (this.props.user.username !== this.props.owner) return;
     this.setState({ editing: req._id });
     // this is jank, todo fix this
     setTimeout(() => this.form.current.setFieldsValue({ feedback: "", ...req }));
@@ -45,17 +45,30 @@ class List extends Component {
     });
   };
 
+  isBN = () => this.state.modderType === "probation" || this.state.modderType === "full";
+
+  titleText = () => {
+    if (this.state.archived) {
+      return "Archives";
+    }
+    if (this.isBN()) {
+      return "Nomination Queue";
+    }
+    return "Modding Queue";
+  };
+
   render() {
     return (
       <Content className="content">
-        <h1 className="List-header">
-          {this.props.owner}'s {this.props.archived ? "Archives" : "Nomination Queue"}
-        </h1>
+        {this.state.modderType && (
+          <h1 className="List-header">
+            {this.props.owner}'s {this.titleText()}
+          </h1>
+        )}
         <div className="List-container">
           {this.state.reqs.map((req) => (
             <MapCard
               {...req}
-              admin={this.props.user.admin}
               edit={this.edit}
               key={req._id}
               compact={this.props.archived}
@@ -75,8 +88,14 @@ class List extends Component {
                 <Select.Option value="Pending">Pending</Select.Option>
                 <Select.Option value="Rejected">Rejected</Select.Option>
                 <Select.Option value="Accepted">Accepted</Select.Option>
-                <Select.Option value="Nominated">Nominated</Select.Option>
-                <Select.Option value="Ranked">Ranked</Select.Option>
+                {this.isBN() ? (
+                  <>
+                    <Select.Option value="Nominated">Nominated</Select.Option>
+                    <Select.Option value="Ranked">Ranked</Select.Option>
+                  </>
+                ) : (
+                  <Select.Option value="Finished">Finished</Select.Option>
+                )}
               </Select>
             </Form.Item>
             <Form.Item label="Feedback" name="feedback">

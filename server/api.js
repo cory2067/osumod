@@ -11,6 +11,15 @@ const Settings = require("./models/settings");
 const { addAsync } = require("@awaitjs/express");
 const router = addAsync(express.Router());
 
+const ModderType = {
+  FULL: "full", // Full BN
+  PROBATION: "probation", // Probation BN
+  MODDER: "modder", // Non-BN modder
+};
+
+const isBN = (settings) =>
+  settings.modderType == ModderType.FULL || settings.modderType == ModderType.PROBATION;
+
 const round = (num) => Math.round(num * 100) / 100;
 const formatTime = (time) =>
   Math.floor(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + Math.floor(time % 60);
@@ -56,13 +65,19 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
   };
 
+  const now = new Date();
+  const [settings, lastReq] = await Promise.all([
+    Settings.findOne({ owner: req.body.target }),
+    Request.findOne({ user: req.user.userid, target: req.body.target }).sort({ requestDate: -1 }),
+  ]);
+
   let errors = [];
   const taikos = map.diffs.filter((diff) => diff.mode === "Taiko");
   if (taikos.length === 0) {
-    errors.push("I'm a taiko BN");
+    errors.push("Taiko requests only");
   }
 
-  if (map.status !== "Pending") {
+  if (isBN(settings) && map.status !== "Pending") {
     errors.push(`Expected a Pending map (this is ${map.status})`);
   }
 
@@ -74,13 +89,11 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push("Comment is excessively long");
   }
 
-  const now = new Date();
-  const [settings, lastReq] = await Promise.all([
-    Settings.findOne({ owner: req.body.target }),
-    Request.findOne({ user: req.user.userid, target: req.body.target }).sort({ requestDate: -1 }),
-  ]);
-
-  if (settings.probation && taikos.length > 0 && taikos.length < map.diffs.length) {
+  if (
+    settings.modderType === ModderType.PROBATION &&
+    taikos.length > 0 &&
+    taikos.length < map.diffs.length
+  ) {
     errors.push("I can't nominate hybrid sets");
   }
 
@@ -180,6 +193,17 @@ router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
  */
 router.getAsync("/settings", async (req, res) => {
   res.send(await Settings.findOne({ owner: req.query.owner }));
+});
+
+/**
+ * POST /api/settings
+ * Set request settings/status
+ * params:
+ *   - settings: settings object (following the Settings schema)
+ */
+router.postAsync("/settings", ensure.isAdmin, async (req, res) => {
+  await Settings.findOneAndUpdate({ owner: req.user.username }, { $set: req.body.settings });
+  res.send({});
 });
 
 /**

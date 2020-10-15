@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Router, Redirect } from "@reach/router";
 import NotFound from "./pages/NotFound.js";
 import List from "./pages/List.js";
+import Settings from "./pages/Settings.js";
 import Request from "./pages/Request";
 import Navbar from "./modules/Navbar";
 import { get } from "../utilities";
@@ -43,6 +44,7 @@ class App extends Component {
             <List path="/:owner" user={this.state.user} archived={false} />
             <List path="/:owner/archives" user={this.state.user} archived={true} />
             <Request path="/:owner/request" user={this.state.user} />
+            <Settings path="/:owner/settings" user={this.state.user} />
             <NotFound default />
           </Router>
           <Footer></Footer>
