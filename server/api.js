@@ -72,9 +72,14 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
   ]);
 
   let errors = [];
-  const taikos = map.diffs.filter((diff) => diff.mode === "Taiko");
-  if (taikos.length === 0) {
-    errors.push("Taiko requests only");
+  const acceptableDiffs = map.diffs.filter((diff) => settings.modes.includes(diff.mode));
+
+  if (acceptableDiffs.length === 0) {
+    if (settings.modes.length === 1) {
+      errors.push(`Only ${settings.modes[0]} maps are accepted`);
+    } else {
+      errors.push(`Must be one of the following gamemodes: ${settings.modes.join(", ")}`);
+    }
   }
 
   if (isBN(settings) && map.status !== "Pending") {
@@ -122,6 +127,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
   } else {
     const request = new Request({
       ...map,
+      status: "Pending",
       user: req.user.userid,
       requestDate: now,
       target: req.body.target,

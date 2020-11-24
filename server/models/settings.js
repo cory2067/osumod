@@ -7,6 +7,7 @@ const SettingsSchema = new mongoose.Schema({
   cooldown: Number,
   m4m: Boolean,
   owner: String,
+  modes: [{ type: String, enum: ["Standard", "Taiko", "Catch the Beat", "Mania"] }],
   modderType: { type: String, enum: ["full", "probation", "modder"] },
 });
 

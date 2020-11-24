@@ -55,6 +55,14 @@ class Settings extends Component {
                   <Select.Option value="modder">Regular Modder</Select.Option>
                 </Select>
               </Form.Item>
+              <Form.Item label="Gamemodes" name="modes">
+                <Select mode="multiple">
+                  <Select.Option value="Standard">Standard</Select.Option>
+                  <Select.Option value="Taiko">Taiko</Select.Option>
+                  <Select.Option value="Catch the Beat">Catch</Select.Option>
+                  <Select.Option value="Mania">Mania</Select.Option>
+                </Select>
+              </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit">
                   Submit
