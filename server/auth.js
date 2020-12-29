@@ -23,6 +23,12 @@ passport.use(
 
       const existing = await User.findOne({ userid: me.id });
       if (existing) {
+        if (existing.username !== me.username) {
+          // if user had a namechange, update the db entry
+          existing.username = me.username;
+          await existing.save();
+        }
+
         return done(null, existing);
       }
 
