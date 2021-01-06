@@ -94,13 +94,13 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push("Comment is excessively long");
   }
 
-  if (
+  /*if (
     settings.modderType === ModderType.PROBATION &&
     taikos.length > 0 &&
     taikos.length < map.diffs.length
   ) {
     errors.push("I can't nominate hybrid sets");
-  }
+  }*/
 
   if (!settings.open) {
     errors.push("Requests are closed");
