@@ -11,10 +11,6 @@ const { Paragraph } = Typography;
 
 const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md";
 
-const REQ_LINK = `${window.location.protocol}//${window.location.host}/${
-  window.location.pathname.split("/")[1]
-}/request`;
-
 class Settings extends Component {
   constructor(props) {
     super(props);
@@ -40,6 +36,10 @@ class Settings extends Component {
   };
 
   render() {
+    const reqLink = `${window.location.protocol}//${window.location.host}/${
+      window.location.pathname.split("/")[1]
+    }/request`;
+    
     return (
       <Content className="content">
         {this.state.settings && (
@@ -51,7 +51,7 @@ class Settings extends Component {
               for instructions on how to use your queue.
             </Paragraph>
             <Paragraph>
-              Mappers can request you at: <a href={REQ_LINK}>{REQ_LINK}</a>
+              Mappers can request you at: <a href={reqLink}>{reqLink}</a>
             </Paragraph>
             <Form initialValues={this.state.settings} onFinish={this.onFinish}>
               <Form.Item label="Open" name="open" valuePropName="checked">
