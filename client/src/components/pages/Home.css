@@ -1,0 +1,16 @@
+.Home-container {
+  margin-top: var(--l);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+}
+
+.Home-list {
+  min-width: 300px;
+}
+
+.Home-create {
+  margin-top: var(--l);
+}

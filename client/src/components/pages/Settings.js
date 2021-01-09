@@ -3,9 +3,13 @@ import "../../utilities.css";
 import "./List.css";
 
 // data from "../../content/home-en";
-import { Layout, Button, InputNumber, Form, Select, Switch, message } from "antd";
+import { Layout, Button, InputNumber, Form, Select, Switch, message, Typography } from "antd";
 import { get, post } from "../../utilities";
+import { navigate } from "@reach/router";
 const { Content } = Layout;
+const { Paragraph } = Typography;
+
+const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md";
 
 class Settings extends Component {
   constructor(props) {
@@ -15,9 +19,10 @@ class Settings extends Component {
   }
 
   componentDidMount() {
-    get("/api/settings", { owner: this.props.owner }).then((settings) =>
-      this.setState({ settings })
-    );
+    get("/api/settings", { owner: this.props.owner }).then((settings) => {
+      if (!settings) navigate("/404");
+      this.setState({ settings });
+    });
   }
 
   onFinish = async (form) => {
@@ -35,6 +40,12 @@ class Settings extends Component {
       <Content className="content">
         {this.state.settings && (
           <div style={{ maxWidth: 500 }}>
+            <Paragraph>
+              <a href={HELP_URL} target="_blank">
+                Click here
+              </a>{" "}
+              for instructions on how to use your queue.
+            </Paragraph>
             <Form initialValues={this.state.settings} onFinish={this.onFinish}>
               <Form.Item label="Open" name="open" valuePropName="checked">
                 <Switch />

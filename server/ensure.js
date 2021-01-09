@@ -9,6 +9,7 @@ function loggedIn(req, res, next) {
   next();
 }
 
+// DEPRECATED: "admin" property serves no purpose anymore
 // ensure the user is an admin, or otherwise has one of the roles specified in userRoles
 function isAdmin(req, res, next) {
   if (!req.user || !req.user.username) {

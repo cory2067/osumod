@@ -19,25 +19,36 @@ class Navbar extends Component {
     return (
       <>
         <Header>
-          <Menu theme="dark" mode="horizontal" selectable={false}>
-            <Menu.Item key="1">
-              <Link to={`${owner}/`}>Home</Link>
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Link to={`${owner}/request`}>Request</Link>
-            </Menu.Item>
-            <Menu.Item key="3">
-              <Link to={`${owner}/archives`}>Archives</Link>
-            </Menu.Item>
-            {this.props.user.admin && this.props.user.username === owner && (
-              <Menu.Item key="settings">
-                <Link to={`${owner}/settings`}>Settings</Link>
+          {!this.props.home ? (
+            <Menu theme="dark" mode="horizontal" selectable={false}>
+              <Menu.Item key="1">
+                <Link to={`/${owner}/`}>Queue</Link>
               </Menu.Item>
-            )}
-            <Menu.Item key="4">
-              <LoginButton {...this.props} />
-            </Menu.Item>
-          </Menu>
+              <Menu.Item key="2">
+                <Link to={`/${owner}/request`}>Request</Link>
+              </Menu.Item>
+              <Menu.Item key="3">
+                <Link to={`/${owner}/archives`}>Archives</Link>
+              </Menu.Item>
+              {this.props.user.admin && this.props.user.username === owner && (
+                <Menu.Item key="settings">
+                  <Link to={`/${owner}/settings`}>Settings</Link>
+                </Menu.Item>
+              )}
+              <Menu.Item key="4">
+                <LoginButton {...this.props} />
+              </Menu.Item>
+            </Menu>
+          ) : (
+            <Menu theme="dark" mode="horizontal" selectable={false}>
+              <Menu.Item key="1">
+                <Link to={`/`}>Home</Link>
+              </Menu.Item>
+              <Menu.Item key="4">
+                <LoginButton {...this.props} />
+              </Menu.Item>
+            </Menu>
+          )}
         </Header>
       </>
     );

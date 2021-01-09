@@ -30,6 +30,7 @@ class Request extends Component {
 
   async componentDidMount() {
     const settings = await get("/api/settings", { owner: this.props.owner });
+    if (!settings) navigate("/404");
     this.setState({ ...settings, pageReady: true });
   }
 
@@ -76,7 +77,7 @@ class Request extends Component {
 
   toggleOpen = (open) => {
     this.setState({ open });
-    post("/api/open", { open, owner: this.props.owner });
+    post("/api/open", { open });
   };
 
   isOwner = () => this.props.owner === this.props.user.username;

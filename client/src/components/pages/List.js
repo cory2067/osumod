@@ -6,6 +6,7 @@ import "./List.css";
 // data from "../../content/home-en";
 import { Layout, Button, Modal, Input, Form, Select, Switch } from "antd";
 const { TextArea } = Input;
+import { navigate } from "@reach/router";
 import { get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
 const { Content } = Layout;
@@ -23,9 +24,10 @@ class List extends Component {
       target: this.props.owner,
     }).then((reqs) => this.setState({ reqs }));
 
-    get("/api/settings", { owner: this.props.owner }).then((settings) =>
-      this.setState({ m4m: settings.m4m, modderType: settings.modderType })
-    );
+    get("/api/settings", { owner: this.props.owner }).then((settings) => {
+      if (!settings) navigate("/404");
+      this.setState({ m4m: settings.m4m, modderType: settings.modderType });
+    });
   }
 
   edit = (req) => {

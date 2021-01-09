@@ -86,14 +86,16 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push(`Expected a Pending map (this is ${map.status})`);
   }
 
-  if (map.creator !== req.user.username) {
+  // disable this until osumod can handle username changes properly
+  /*if (map.creator !== req.user.username) {
     errors.push("This map isn't yours");
-  }
+  }*/
 
   if (map.comment.length > 500) {
     errors.push("Comment is excessively long");
   }
 
+  // outdated check
   /*if (
     settings.modderType === ModderType.PROBATION &&
     taikos.length > 0 &&
@@ -181,10 +183,11 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
  *   - status: request status (e.g. accepted, rejected, nominated)
  *   - archived: whether the request is archived
  */
-router.postAsync("/request-edit", ensure.isAdmin, async (req, res) => {
+router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} edited request ${req.body.id}`);
+  // query for "target" ensures that the user can't modify requests on someone else's queue
   const updated = await Request.findOneAndUpdate(
-    { _id: req.body.id },
+    { _id: req.body.id, target: req.user.username },
     { $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived } },
     { new: true }
   );
@@ -207,7 +210,8 @@ router.getAsync("/settings", async (req, res) => {
  * params:
  *   - settings: settings object (following the Settings schema)
  */
-router.postAsync("/settings", ensure.isAdmin, async (req, res) => {
+router.postAsync("/settings", ensure.loggedIn, async (req, res) => {
+  logger.info(`${req.user.username} updated their settings`);
   await Settings.findOneAndUpdate({ owner: req.user.username }, { $set: req.body.settings });
   res.send({});
 });
@@ -217,11 +221,46 @@ router.postAsync("/settings", ensure.isAdmin, async (req, res) => {
  * Set requests open/closed
  * Params:
  *   - open: true for requests open, false for requests closed
- *   - owner: owner of the queue
  */
-router.postAsync("/open", ensure.isAdmin, async (req, res) => {
-  await Settings.findOneAndUpdate({ owner: req.body.owner }, { $set: { open: req.body.open } });
+router.postAsync("/open", ensure.loggedIn, async (req, res) => {
+  logger.info(`${req.user.username} toggled open to ${req.body.open}`);
+  await Settings.findOneAndUpdate({ owner: req.user.username }, { $set: { open: req.body.open } });
   res.send({});
+});
+
+/**
+ * GET /api/queues
+ * Get a list of all modding queues
+ */
+router.getAsync("/queues", async (req, res) => {
+  const queues = await Settings.find({});
+  res.send(queues);
+});
+
+/**
+ * POST /api/create-queue
+ * Create a queue for oneself
+ */
+router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
+  const existing = await Settings.findOne({ owner: req.user.username });
+  if (existing) {
+    logger.info(`${req.user.username} tried to create a queue, but they already have one`);
+    return res.send(existing);
+  }
+
+  const newSettings = new Settings({
+    open: false,
+    maxPending: 9999,
+    cooldown: 0,
+    m4m: false,
+    owner: req.user.username,
+    modes: ["Taiko"],
+    modderType: "modder",
+  });
+
+  await newSettings.save();
+  logger.info(`${req.user.username} created a queue`);
+  res.send(newSettings);
 });
 
 /**

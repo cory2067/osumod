@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Router, Redirect } from "@reach/router";
 import NotFound from "./pages/NotFound.js";
+import Home from "./pages/Home.js";
 import List from "./pages/List.js";
 import Settings from "./pages/Settings.js";
 import Request from "./pages/Request";
@@ -35,12 +36,18 @@ class App extends Component {
     return (
       <>
         <Layout>
-          <Navbar user={this.state.user} updateUser={this.updateUser} />
+          <Router>
+            <Navbar path="/" user={this.state.user} updateUser={this.updateUser} home={true} />
+            <Navbar path="/404" user={this.state.user} updateUser={this.updateUser} home={true} />
+            <Navbar default user={this.state.user} updateUser={this.updateUser} home={false} />
+          </Router>
+
           <Router primary={false}>
-            <Redirect from="/" to={`${DEFAULT_ID}/`} />
             <Redirect from="/archives" to={`${DEFAULT_ID}/archives`} />
             <Redirect from="/request" to={`${DEFAULT_ID}/request`} />
 
+            <NotFound path="/404" />
+            <Home path="/" user={this.state.user} />
             <List path="/:owner" user={this.state.user} archived={false} />
             <List path="/:owner/archives" user={this.state.user} archived={true} />
             <Request path="/:owner/request" user={this.state.user} />
