@@ -30,7 +30,7 @@ class Navbar extends Component {
               <Menu.Item key="3">
                 <Link to={`/${owner}/archives`}>Archives</Link>
               </Menu.Item>
-              {this.props.user.admin && this.props.user.username === owner && (
+              {this.props.user.username === owner && (
                 <Menu.Item key="settings">
                   <Link to={`/${owner}/settings`}>Settings</Link>
                 </Menu.Item>
