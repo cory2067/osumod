@@ -3,6 +3,7 @@ import {
   InfoCircleTwoTone,
   CloseCircleTwoTone,
   CheckCircleTwoTone,
+  ProfileTwoTone,
   HeartTwoTone,
   LikeTwoTone,
   StarOutlined,
@@ -18,6 +19,7 @@ const icons = {
   Pending: InfoCircleTwoTone,
   Rejected: CloseCircleTwoTone,
   Accepted: CheckCircleTwoTone,
+  Modded: ProfileTwoTone,
   Nominated: LikeTwoTone,
   Finished: LikeTwoTone,
   Ranked: HeartTwoTone,
@@ -26,6 +28,7 @@ const icons = {
 const colors = {
   Pending: "#aaaaaa",
   Accepted: "#52c41a",
+  Modded: "#17bebb",
   Rejected: "#f8333c",
   Ranked: "#eb2f96",
 };

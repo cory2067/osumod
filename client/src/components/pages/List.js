@@ -92,6 +92,7 @@ class List extends Component {
                 <Select.Option value="Accepted">Accepted</Select.Option>
                 {this.isBN() ? (
                   <>
+                    <Select.Option value="Modded">Modded</Select.Option>
                     <Select.Option value="Nominated">Nominated</Select.Option>
                     <Select.Option value="Ranked">Ranked</Select.Option>
                   </>
