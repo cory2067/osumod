@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {
+import Icon, {
   InfoCircleTwoTone,
   CloseCircleTwoTone,
   CheckCircleTwoTone,
@@ -11,6 +11,11 @@ import {
   DashboardTwoTone,
 } from "@ant-design/icons";
 import { Link } from "@reach/router";
+
+import StandardIcon from "../../public/mode-osu.svg";
+import TaikoIcon from "../../public/mode-taiko.svg";
+import CatchIcon from "../../public/mode-ctb.svg";
+import ManiaIcon from "../../public/mode-mania.svg";
 
 import { Card, Tooltip } from "antd";
 import "./MapCard.css";
@@ -31,6 +36,23 @@ const colors = {
   Modded: "#17bebb",
   Rejected: "#f8333c",
   Ranked: "#eb2f96",
+};
+
+const diffIcons = {
+  Standard: StandardIcon,
+  Taiko: TaikoIcon,
+  "Catch the Beat": CatchIcon,
+  Mania: ManiaIcon,
+};
+
+// https://github.com/ppy/osu-web/blob/master/resources/assets/lib/utils/beatmap-helper.ts
+const getDiffColor = (rating) => {
+  if (rating < 2) return "#88b300";
+  if (rating < 2.7) return "#66ccff";
+  if (rating < 4) return "#ffcc22";
+  if (rating < 5.3) return "#ff66aa";
+  if (rating < 6.5) return "#aa88ff";
+  return "#121415";
 };
 
 class MapCard extends Component {
@@ -112,12 +134,12 @@ class MapCard extends Component {
             <div className="MapCard-divider"></div>
             <div className="MapCard-diff-list">
               {this.props.diffs.map((diff) => (
-                <div key={diff.name} className="MapCard-diff">
-                  <div className="u-bold">{diff.name}</div>
-                  <div>
-                    {diff.sr} <StarOutlined />
-                  </div>
-                </div>
+                <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
+                  <Icon
+                    style={{ fontSize: 24, color: getDiffColor(diff.sr), padding: 5 }}
+                    component={diffIcons[diff.mode]}
+                  />
+                </Tooltip>
               ))}
             </div>
           </>

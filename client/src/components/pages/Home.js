@@ -34,6 +34,16 @@ class Home extends Component {
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Home-container">
+          <div className="Home-create">
+            {this.props.user._id ? (
+              <Button type="primary" loading={this.state.creating} onClick={this.create}>
+                Create a Queue
+              </Button>
+            ) : (
+              <div>Log in to create your own queue</div>
+            )}
+          </div>
+
           <List
             className="Home-list"
             header={<div>Modding Queues</div>}
@@ -52,16 +62,6 @@ class Home extends Component {
               </List.Item>
             )}
           />
-
-          <div className="Home-create">
-            {this.props.user._id ? (
-              <Button type="primary" loading={this.state.creating} onClick={this.create}>
-                Create a Queue
-              </Button>
-            ) : (
-              <div>Log in to create your own queue</div>
-            )}
-          </div>
         </div>
       </Content>
     );

@@ -49,10 +49,25 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
+        test: /\.(png|jpg|gif)$/,
         use: [
           {
             loader: "url-loader",
+          },
+        ],
+      },
+      {
+        test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: "babel-loader",
+          },
+          {
+            loader: "@svgr/webpack",
+            options: {
+              babel: false,
+              icon: true,
+            },
           },
         ],
       },

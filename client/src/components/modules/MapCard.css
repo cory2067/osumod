@@ -69,8 +69,10 @@
 }
 
 .MapCard-diff-list {
-  display: flex;
-  flex-wrap: wrap;
+  border-radius: 10px;
+  background-color: #f5f5f5;
+  border: 2px solid #999;
+  display: inline-block;
 }
 
 .MapCard-diff {
