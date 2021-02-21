@@ -5,6 +5,7 @@ import "./Home.css";
 import { navigate } from "@reach/router";
 import { Layout, Button, List } from "antd";
 import { get, post } from "../../utilities";
+import ModeIcon from "../modules/ModeIcon";
 const { Content } = Layout;
 
 class Home extends Component {
@@ -54,8 +55,15 @@ class Home extends Component {
             renderItem={(item) => (
               <List.Item key={item._id}>
                 <List.Item.Meta
-                  title={<a href={`/${item.owner}`}>{item.owner}</a>}
-                  description={item.modderType === "modder" ? "Modder" : "Beatmap Nominator"}
+                  title={<a href={`/${item.owner}`}>{item.owner} </a>}
+                  description={
+                    <span>
+                      {item.modderType === "modder" ? "Modder " : "Beatmap Nominator "}
+                      {item.modes.map((m) => (
+                        <ModeIcon key={m} mode={m} size={14} padding={2} />
+                      ))}
+                    </span>
+                  }
                 />
 
                 <div>{item.open ? "Open" : "Closed"}</div>
