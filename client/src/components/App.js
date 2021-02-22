@@ -20,6 +20,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = { user: {}, loginAttention: false };
+
+    // Redirect users off the herokuapp domain
+    if (window.location.hostname === "osumod.herokuapp.com") {
+      window.location.replace(window.location.href.replace("herokuapp.", ""));
+    }
   }
 
   componentDidMount() {
