@@ -4,18 +4,24 @@ import "../../utilities.css";
 import "./List.css";
 
 // data from "../../content/home-en";
-import { Layout, Button, Modal, Input, Form, Select, Switch } from "antd";
+import { Layout, Button, Modal, Input, Form, Select, Switch, Alert } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
 import { get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
 const { Content } = Layout;
 
+const DISCORD_URL = "https://disc" + "ord.gg/Mt35Sxpt";
+
 class List extends Component {
   constructor(props) {
     super(props);
     this.form = React.createRef();
-    this.state = { reqs: [], editing: null };
+    this.state = {
+      reqs: [],
+      editing: null,
+      showDiscordInvite: !localStorage.getItem("closedInvite"),
+    };
   }
 
   componentDidMount() {
@@ -30,8 +36,10 @@ class List extends Component {
     });
   }
 
+  isOwner = () => this.props.user && this.props.user.username === this.props.owner;
+
   edit = (req) => {
-    if (this.props.user.username !== this.props.owner) return;
+    if (!this.isOwner()) return;
     this.setState({ editing: req._id });
     // this is jank, todo fix this
     setTimeout(() => this.form.current.setFieldsValue({ feedback: "", ...req }));
@@ -62,6 +70,30 @@ class List extends Component {
   render() {
     return (
       <Content className="content">
+        {this.isOwner() && this.state.showDiscordInvite && (
+          <Alert
+            message={
+              <>
+                <div>
+                  Thanks for using osumod! Since there's a lot of users now, I created a Discord
+                  server for stuff like updates, feature requests, and bug reports.
+                </div>
+                <div>
+                  Join if you'd like:{" "}
+                  <a href={DISCORD_URL} target="_blank">
+                    {DISCORD_URL}
+                  </a>
+                </div>
+              </>
+            }
+            type="info"
+            closable
+            onClose={() => {
+              this.setState({ showDiscordInvite: false });
+              localStorage.setItem("closedInvite", true);
+            }}
+          />
+        )}
         {this.state.modderType && (
           <h1 className="List-header">
             {this.props.owner}'s {this.titleText()}

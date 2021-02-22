@@ -39,7 +39,7 @@ class Settings extends Component {
     const reqLink = `${window.location.protocol}//${window.location.host}/${
       window.location.pathname.split("/")[1]
     }/request`;
-    
+
     return (
       <Content className="content">
         {this.state.settings && (

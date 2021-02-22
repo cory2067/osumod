@@ -1,7 +1,5 @@
 # osumod
 
-Feel free to contact me (Cychloryn) with any feature requests, bug reports, etc.
-
 ## Usage for queue owners
 
 ### Home Tab
