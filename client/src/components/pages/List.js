@@ -25,6 +25,8 @@ class List extends Component {
   }
 
   componentDidMount() {
+    document.title = `${this.props.owner}'s queue`;
+
     get("/api/requests", {
       archived: this.props.archived,
       target: this.props.owner,

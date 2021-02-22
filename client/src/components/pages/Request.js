@@ -29,6 +29,8 @@ class Request extends Component {
   }
 
   async componentDidMount() {
+    document.title = `${this.props.owner}'s queue`;
+
     const settings = await get("/api/settings", { owner: this.props.owner });
     if (!settings) navigate("/404");
     this.setState({ ...settings, pageReady: true });
