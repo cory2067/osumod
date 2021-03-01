@@ -8,3 +8,7 @@
   font-size: 22pt;
   text-align: center;
 }
+
+.List-buttoncontainer button {
+  margin: 0px 2px;
+}

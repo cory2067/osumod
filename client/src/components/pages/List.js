@@ -4,10 +4,10 @@ import "../../utilities.css";
 import "./List.css";
 
 // data from "../../content/home-en";
-import { Layout, Button, Modal, Input, Form, Select, Switch, Alert } from "antd";
+import { Layout, Button, Modal, Input, Form, Select, Switch, Alert, message } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
-import { get, post } from "../../utilities";
+import { delet, get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
 const { Content } = Layout;
 
@@ -48,12 +48,30 @@ class List extends Component {
   };
 
   onFinish = async (form) => {
-    console.log(form);
     const updated = await post("/api/request-edit", { ...form, id: this.state.editing });
-    console.log(updated);
     this.setState({
       editing: null,
       reqs: this.state.reqs.map((req) => (req._id === this.state.editing ? updated : req)),
+    });
+  };
+
+  onRefresh = async () => {
+    try {
+      const updated = await post("/api/request-refresh", { id: this.state.editing });
+      this.setState({
+        editing: null,
+        reqs: this.state.reqs.map((req) => (req._id === this.state.editing ? updated : req)),
+      });
+    } catch (e) {
+      message.error("Couldn't refresh; this map might have been deleted");
+    }
+  };
+
+  onDelete = async () => {
+    await delet("/api/request", { id: this.state.editing });
+    this.setState({
+      editing: null,
+      reqs: this.state.reqs.filter((req) => req._id !== this.state.editing),
     });
   };
 
@@ -141,10 +159,12 @@ class List extends Component {
             <Form.Item label="Archived" name="archived" valuePropName="checked">
               <Switch />
             </Form.Item>
-            <Form.Item>
+            <Form.Item className="List-buttoncontainer">
               <Button type="primary" htmlType="submit">
                 Submit
               </Button>
+              <Button onClick={this.onRefresh}>Refresh</Button>
+              <Button onClick={this.onDelete}>Delete</Button>
             </Form.Item>
           </Form>
         </Modal>

@@ -40,6 +40,11 @@ class MapCard extends Component {
     this.state = {};
   }
 
+  getLink = () =>
+    this.props.mapsetId
+      ? `https://osu.ppy.sh/s/${this.props.mapsetId}`
+      : `https://osu.ppy.sh/b/${this.props.mapId}`;
+
   render() {
     let StatusIcon = icons[this.props.status] || InfoCircleTwoTone;
 
@@ -64,7 +69,7 @@ class MapCard extends Component {
         }
         bordered={true}
         cover={
-          <a target="_blank" href={`https://osu.ppy.sh/b/${this.props.mapId}`}>
+          <a target="_blank" href={this.getLink()}>
             <img src={this.props.image} />
           </a>
         }

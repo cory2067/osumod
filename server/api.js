@@ -24,6 +24,45 @@ const round = (num) => Math.round(num * 100) / 100;
 const formatTime = (time) =>
   Math.floor(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + Math.floor(time % 60);
 
+const getMapData = async (id) => {
+  const mapData = await osuApi.getBeatmaps({ s: id });
+
+  return {
+    mapsetId: parseInt(mapData[0].beatmapSetId),
+    title: mapData[0].title,
+    artist: mapData[0].artist,
+    creator: mapData[0].creator,
+    bpm: parseFloat(mapData[0].bpm),
+    length: formatTime(parseInt(mapData[0].length.total)),
+    diffs: mapData
+      .map((diff) => ({
+        name: diff.version,
+        mode: diff.mode,
+        sr: round(parseFloat(diff.difficulty.rating)),
+      }))
+      .sort((a, b) => a.sr - b.sr),
+    status: mapData[0].approvalStatus,
+    image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
+  };
+};
+
+const getMapsetIdFromRequest = async (req) => {
+  if (req.mapsetId) {
+    return req.mapsetId;
+  }
+
+  // requests before 2/28/21 didn't have the mapset id stored (only one diff's map id)
+  // but we can try to parse the mapset id from the map bg link
+  const regex = /.*beatmaps\/([0-9]+)\/covers.*/g;
+  const match = regex.exec(req.image);
+  if (match && match[1]) {
+    return match[1];
+  }
+
+  // worst case scenario, we fetch it from the osu api
+  return (await osuApi.getBeatmaps({ b: req.mapId }))[0].beatmapSetId;
+};
+
 /**
  * POST /api/request
  * Submit a new request
@@ -37,33 +76,13 @@ const formatTime = (time) =>
 router.postAsync("/request", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} submitted ${req.body.id}`);
 
-  let mapData;
+  let map;
   try {
-    mapData = await osuApi.getBeatmaps({ s: req.body.id });
+    map = await getMapData(req.body.id);
   } catch (e) {
     logger.info(`${req.user.username} submitted an invalid beatmaps`);
     return res.send({ mapset: {}, errors: ["Invalid beatmap ID"] });
   }
-
-  const map = {
-    mapId: parseInt(mapData[0].id),
-    title: mapData[0].title,
-    artist: mapData[0].artist,
-    creator: mapData[0].creator,
-    bpm: parseFloat(mapData[0].bpm),
-    length: formatTime(parseInt(mapData[0].length.total)),
-    comment: req.body.comment || "",
-    m4m: req.body.m4m || false,
-    diffs: mapData
-      .map((diff) => ({
-        name: diff.version,
-        mode: diff.mode,
-        sr: round(parseFloat(diff.difficulty.rating)),
-      }))
-      .sort((a, b) => a.sr - b.sr),
-    status: mapData[0].approvalStatus,
-    image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
-  };
 
   const now = new Date();
   const [settings, lastReq] = await Promise.all([
@@ -91,7 +110,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     errors.push("This map isn't yours");
   }*/
 
-  if (map.comment.length > 500) {
+  if (req.body.comment && req.body.comment.length > 500) {
     errors.push("Comment is excessively long");
   }
 
@@ -133,6 +152,8 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       user: req.user.userid,
       requestDate: now,
       target: req.body.target,
+      m4m: req.body.m4m || false,
+      comment: req.body.comment || "",
       archived: false,
     });
     await request.save();
@@ -189,6 +210,38 @@ router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
   const updated = await Request.findOneAndUpdate(
     { _id: req.body.id, target: req.user.username },
     { $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived } },
+    { new: true }
+  );
+  res.send(updated);
+});
+
+/**
+ * POST /api/request-refresh
+ * Refresh a request's metadata and difficulty settings
+ * Params:
+ *   - id: _id of the request
+ */
+router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
+  logger.info(`${req.user.username} edited request ${req.body.id}`);
+  // query for "target" ensures that the user can't modify requests on someone else's queue
+  const request = await Request.findById(req.body.id);
+  if (!request) {
+    return res.status(400).send({ msg: "request doesn't exist" });
+  }
+
+  let map;
+  try {
+    const mapsetId = await getMapsetIdFromRequest(request);
+    map = await getMapData(mapsetId);
+  } catch (e) {
+    console.log(e);
+    return res.status(400).send({ msg: "map doesn't exist" });
+  }
+
+  delete map.status; // don't override what the modder put as map status
+  const updated = await Request.findOneAndUpdate(
+    { _id: req.body.id, target: req.user.username },
+    { $set: map },
     { new: true }
   );
   res.send(updated);

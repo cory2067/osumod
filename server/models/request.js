@@ -4,6 +4,7 @@ const RequestSchema = new mongoose.Schema({
   user: Number,
   requestDate: Date,
   mapId: Number,
+  mapsetId: Number,
   title: String,
   artist: String,
   creator: String,
