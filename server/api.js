@@ -191,7 +191,7 @@ router.getAsync("/requests", async (req, res) => {
  *   - id: ID of the request
  */
 router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
-  logger.info(`${req.user.username} deleted their request ${req.body.id}`);
+  logger.info(`${req.user.username} deleted request ${req.body.id}`);
   await Request.deleteOne({ _id: req.body.id, user: req.user.userid });
   res.send({});
 });
@@ -222,7 +222,7 @@ router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
  *   - id: _id of the request
  */
 router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
-  logger.info(`${req.user.username} edited request ${req.body.id}`);
+  logger.info(`${req.user.username} refreshed request ${req.body.id}`);
   // query for "target" ensures that the user can't modify requests on someone else's queue
   const request = await Request.findById(req.body.id);
   if (!request) {
