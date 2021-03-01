@@ -7,7 +7,10 @@
 ![(i) Pending](http://put.nu/files/JVTQTgd.png)
 
 For each request, click the (i) icon to open a menu where you can set each request to accepted, rejected, nominated, etc.
+
 If you select the "archived" option, the request will be removed from your home page, and moved to the "Archives" tab. This can be useful for decluttering your queue.
+
+After being requested, map info won't update automatically. So if the map changes metadata or star rating, you can use the "Refresh" button to update them.
 
 ### Request Tab
 
