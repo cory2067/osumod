@@ -286,7 +286,7 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
  * Get a list of all modding queues
  */
 router.getAsync("/queues", async (req, res) => {
-  const queues = await Settings.find({});
+  const queues = await Settings.find({}).select("open owner modes modderType");
   res.send(queues);
 });
 

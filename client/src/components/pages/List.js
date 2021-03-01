@@ -21,6 +21,7 @@ class List extends Component {
       reqs: [],
       editing: null,
       showDiscordInvite: !localStorage.getItem("closedInvite"),
+      loading: false,
     };
   }
 
@@ -40,6 +41,15 @@ class List extends Component {
 
   isOwner = () => this.props.user && this.props.user.username === this.props.owner;
 
+  loadingWrapper = (fn) => async (...args) => {
+    this.setState({ loading: true });
+    try {
+      await fn(...args);
+    } finally {
+      this.setState({ loading: false });
+    }
+  };
+
   edit = (req) => {
     if (!this.isOwner()) return;
     this.setState({ editing: req._id });
@@ -47,15 +57,15 @@ class List extends Component {
     setTimeout(() => this.form.current.setFieldsValue({ feedback: "", ...req }));
   };
 
-  onFinish = async (form) => {
+  onFinish = this.loadingWrapper(async (form) => {
     const updated = await post("/api/request-edit", { ...form, id: this.state.editing });
     this.setState({
       editing: null,
       reqs: this.state.reqs.map((req) => (req._id === this.state.editing ? updated : req)),
     });
-  };
+  });
 
-  onRefresh = async () => {
+  onRefresh = this.loadingWrapper(async () => {
     try {
       const updated = await post("/api/request-refresh", { id: this.state.editing });
       this.setState({
@@ -65,15 +75,15 @@ class List extends Component {
     } catch (e) {
       message.error("Couldn't refresh; this map might have been deleted");
     }
-  };
+  });
 
-  onDelete = async () => {
+  onDelete = this.loadingWrapper(async () => {
     await delet("/api/request", { id: this.state.editing });
     this.setState({
       editing: null,
       reqs: this.state.reqs.filter((req) => req._id !== this.state.editing),
     });
-  };
+  });
 
   isBN = () => this.state.modderType === "probation" || this.state.modderType === "full";
 
@@ -160,11 +170,15 @@ class List extends Component {
               <Switch />
             </Form.Item>
             <Form.Item className="List-buttoncontainer">
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" disabled={this.state.loading}>
                 Submit
               </Button>
-              <Button onClick={this.onRefresh}>Refresh</Button>
-              <Button onClick={this.onDelete}>Delete</Button>
+              <Button onClick={this.onRefresh} disabled={this.state.loading}>
+                Refresh
+              </Button>
+              <Button onClick={this.onDelete} disabled={this.state.loading}>
+                Delete
+              </Button>
             </Form.Item>
           </Form>
         </Modal>
