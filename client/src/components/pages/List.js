@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import ReactMarkdown from "react-markdown";
 import "../../utilities.css";
 import "./List.css";
 
@@ -148,7 +147,13 @@ class List extends Component {
           footer={false}
           onCancel={() => this.setState({ editing: null })}
         >
-          <Form ref={this.form} onFinish={this.onFinish} name="edit">
+          <Form
+            ref={this.form}
+            onFinish={this.onFinish}
+            name="edit"
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 20 }}
+          >
             <Form.Item label="Status" name="status">
               <Select>
                 <Select.Option value="Pending">Pending</Select.Option>

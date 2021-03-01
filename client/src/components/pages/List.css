@@ -9,6 +9,10 @@
   text-align: center;
 }
 
+.List-buttoncontainer {
+  margin-bottom: 0 !important;
+}
+
 .List-buttoncontainer button {
   margin: 0px 2px;
 }
