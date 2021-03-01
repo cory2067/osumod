@@ -61,7 +61,9 @@ class List extends Component {
     const updated = await post("/api/request-edit", { ...form, id: this.state.editing });
     this.setState({
       editing: null,
-      reqs: this.state.reqs.map((req) => (req._id === this.state.editing ? updated : req)),
+      reqs: this.state.reqs
+        .map((req) => (req._id === this.state.editing ? updated : req))
+        .filter((req) => req.archived === this.props.archived),
     });
   });
 
