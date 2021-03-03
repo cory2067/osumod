@@ -12,7 +12,7 @@ const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
 const BANNER_KEY = "closedBanner"
-const BANNER_VERSION = 1
+const BANNER_VERSION = "1"
 
 class List extends Component {
   constructor(props) {
