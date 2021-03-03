@@ -10,7 +10,7 @@ import { delet, get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
 const { Content } = Layout;
 
-const DISCORD_URL = "https://disc" + "ord.gg/Mt35Sxpt";
+const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
 
 class List extends Component {
   constructor(props) {
