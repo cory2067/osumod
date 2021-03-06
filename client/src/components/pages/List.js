@@ -10,7 +10,9 @@ import { delet, get, post } from "../../utilities";
 import MapCard from "../modules/MapCard";
 const { Content } = Layout;
 
-const DISCORD_URL = "https://disc" + "ord.gg/Mt35Sxpt";
+const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
+const BANNER_KEY = "closedBanner"
+const BANNER_VERSION = "1"
 
 class List extends Component {
   constructor(props) {
@@ -19,7 +21,7 @@ class List extends Component {
     this.state = {
       reqs: [],
       editing: null,
-      showDiscordInvite: !localStorage.getItem("closedInvite"),
+      showDiscordInvite: localStorage.getItem(BANNER_KEY) !== BANNER_VERSION,
       loading: false,
     };
   }
@@ -106,14 +108,7 @@ class List extends Component {
             message={
               <>
                 <div>
-                  Thanks for using osumod! Since there's a lot of users now, I created a Discord
-                  server for stuff like updates, feature requests, and bug reports.
-                </div>
-                <div>
-                  Join if you'd like:{" "}
-                  <a href={DISCORD_URL} target="_blank">
-                    {DISCORD_URL}
-                  </a>
+                  Thanks for using osumod! <a href={DISCORD_URL} target="_blank">Click here</a> to join the osumod discord (invite link fixed now!)
                 </div>
               </>
             }
@@ -121,7 +116,7 @@ class List extends Component {
             closable
             onClose={() => {
               this.setState({ showDiscordInvite: false });
-              localStorage.setItem("closedInvite", true);
+              localStorage.setItem(BANNER_KEY, BANNER_VERSION);
             }}
           />
         )}
