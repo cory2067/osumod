@@ -192,7 +192,11 @@ router.getAsync("/requests", async (req, res) => {
  */
 router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} deleted request ${req.body.id}`);
-  await Request.deleteOne({ _id: req.body.id, user: req.user.userid });
+  // ensure it can only be deleted by the requester or the queue owner
+  await Request.deleteOne({
+    _id: req.body.id,
+    $or: [{ user: req.user.userid }, { target: req.user.username }],
+  });
   res.send({});
 });
 
