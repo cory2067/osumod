@@ -90,16 +90,16 @@ class MapCard extends Component {
                 <DashboardTwoTone /> {this.props.bpm}bpm
               </span>
             </div>
+          </>
+        )}
 
-            {this.props.comment && (
-              <>
-                <div className="MapCard-divider"></div>
-                <div className="MapCard-comment">
-                  <span className="u-bold">Mapper's Comment: </span>
-                  {this.props.comment}
-                </div>
-              </>
-            )}
+        {this.props.comment && (
+          <>
+            <div className="MapCard-divider"></div>
+            <div className="MapCard-comment">
+              <span className="u-bold">Mapper's Comment: </span>
+              {this.props.comment}
+            </div>
           </>
         )}
 
