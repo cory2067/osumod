@@ -21,6 +21,9 @@ class Navbar extends Component {
         <Header>
           {!this.props.home ? (
             <Menu theme="dark" mode="horizontal" selectable={false}>
+              <Menu.Item key="0">
+                <Link to={`/`}>Home</Link>
+              </Menu.Item>
               <Menu.Item key="1">
                 <Link to={`/${owner}/`}>Queue</Link>
               </Menu.Item>
