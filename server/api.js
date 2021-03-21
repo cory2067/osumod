@@ -345,6 +345,21 @@ router.postAsync("/archive-queue", ensure.loggedIn, async (req, res) => {
 });
 
 /**
+ * POST /api/notes
+ * Adds notes to the user's queue (to appear on the requests page)
+ * Params:
+ *   - content: the notes
+ */
+router.postAsync("/notes", ensure.loggedIn, async (req, res) => {
+  logger.info(`${req.user.username} set their queue notes`);
+  await Settings.findOneAndUpdate(
+    { owner: req.user.username },
+    { $set: { notes: req.body.content } }
+  );
+  res.send({});
+});
+
+/**
  * GET /api/whoami
  * Returns the identity of the currently logged in user
  */

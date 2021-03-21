@@ -12,6 +12,7 @@ const SettingsSchema = new mongoose.Schema({
   modes: [{ type: String, enum: ["Standard", "Taiko", "Catch the Beat", "Mania"] }],
   modderType: { type: String, enum: ["full", "probation", "modder"] },
   archived: Boolean,
+  notes: { type: String, max: 5000 },
 });
 
 module.exports = mongoose.model("Settings", SettingsSchema);
