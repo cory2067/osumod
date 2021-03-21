@@ -258,7 +258,7 @@ router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
  *   - owner: owner of the queue
  */
 router.getAsync("/settings", async (req, res) => {
-  res.send(await Settings.findOne({ owner: req.query.owner }));
+  res.send(await Settings.findOne({ owner: req.query.owner, archived: { $ne: true } }));
 });
 
 /**
@@ -290,7 +290,9 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
  * Get a list of all modding queues
  */
 router.getAsync("/queues", async (req, res) => {
-  const queues = await Settings.find({}).select("open owner modes modderType");
+  const queues = await Settings.find({ archived: { $ne: true } }).select(
+    "open owner modes modderType"
+  );
   res.send(queues);
 });
 
@@ -301,7 +303,14 @@ router.getAsync("/queues", async (req, res) => {
 router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
   const existing = await Settings.findOne({ owner: req.user.username });
   if (existing) {
-    logger.info(`${req.user.username} tried to create a queue, but they already have one`);
+    if (existing.archived) {
+      logger.info(`${req.user.username} unarchived their queue`);
+      existing.archived = false;
+      await existing.save();
+    } else {
+      logger.info(`${req.user.username} tried to create a queue, but they already have one`);
+    }
+
     return res.send(existing);
   }
 
@@ -318,6 +327,21 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
   await newSettings.save();
   logger.info(`${req.user.username} created a queue`);
   res.send(newSettings);
+});
+
+/**
+ * POST /api/archive-queue
+ * Marks the user's queue as archived, making it invisible from the home page
+ */
+router.postAsync("/archive-queue", ensure.loggedIn, async (req, res) => {
+  const settings = await Settings.findOne({ owner: req.user.username });
+  if (!settings) {
+    return res.status(404).send({ msg: "Queue not found" });
+  }
+  logger.info(`${req.user.username} archived their queue`);
+  settings.archived = true;
+  await settings.save();
+  res.send(settings);
 });
 
 /**
