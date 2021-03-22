@@ -14,3 +14,26 @@
 .Home-create {
   margin-bottom: var(--l);
 }
+
+.Home-queues{
+  display: flex;
+  flex-direction: row;
+}
+
+.Home-queues > div {
+  margin: var(--s)
+}
+
+.Home-filters {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.Home-filters > div {
+  margin: 2px;
+}
+
+.Home-filters > span {
+  font-weight: bold;
+}
