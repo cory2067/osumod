@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Layout, Button, List } from "antd";
 import ModeIcon from "./ModeIcon";
 
-function QueueList({ title, queues }) {
+function QueueList({ title, queues, loading }) {
   return (
     <List
       className="Home-list"
       header={<div>{title}</div>}
       size="large"
       bordered
-      loading={!queues.length}
+      loading={loading}
       dataSource={queues}
       renderItem={(item) => (
         <List.Item key={item._id}>

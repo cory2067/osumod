@@ -15,11 +15,18 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.form = React.createRef();
-    this.state = { queues: [], creating: false };
+    this.state = { queues: [], creating: false, loading: true };
   }
 
   componentDidMount() {
-    get("/api/queues").then((queues) => this.setState({ queues }));
+    get("/api/queues").then((queues) =>
+      this.setState({
+        loading: false,
+        queues,
+        hasQueue:
+          this.props.user && queues.filter((q) => q.owner === this.props.user.username).length,
+      })
+    );
   }
 
   create = async () => {
@@ -37,8 +44,6 @@ class Home extends Component {
   filterQueues = (queue) => {
     let ok = true;
     if (this.state.mode) {
-      console.log(queue.modes);
-      console.log(this.state.mode);
       ok = ok && queue.modes.includes(this.state.mode);
       console.log(ok);
     }
@@ -66,15 +71,27 @@ class Home extends Component {
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Home-container">
-          <div className="Home-create">
-            {this.props.user._id ? (
-              <Button type="primary" loading={this.state.creating} onClick={this.create}>
-                Create a Queue
-              </Button>
-            ) : (
-              <div>Log in to create your own queue</div>
-            )}
-          </div>
+          {!this.state.loading && (
+            <div className="Home-create">
+              {this.props.user._id ? (
+                this.state.hasQueue ? (
+                  <Button
+                    type="primary"
+                    loading={this.state.creating}
+                    onClick={() => navigate(`/${this.props.user.username}`)}
+                  >
+                    Your Queue
+                  </Button>
+                ) : (
+                  <Button type="primary" loading={this.state.creating} onClick={this.create}>
+                    Create a Queue
+                  </Button>
+                )
+              ) : (
+                <div>Log in to create your own queue</div>
+              )}
+            </div>
+          )}
 
           <div className="Home-filters">
             <span>Filters</span>
@@ -93,6 +110,7 @@ class Home extends Component {
           <div className="Home-queues">
             <QueueList
               title={"Modding Queues"}
+              loading={this.state.loading}
               queues={this.state.queues.filter(this.filterQueues).sort(this.sortQueues)}
             />
           </div>
