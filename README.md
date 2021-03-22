@@ -16,6 +16,21 @@ After being requested, map info won't update automatically. So if the map change
 
 There is an "open/closed" slider here for your convenience, which is not visible to others. You can always submit requests to yourself, even if you're closed. Submitting to yourself bypasses all checks (e.g. cooldown).
 
+You also have the ability to add notes to the request page, such as adding queue rules or listing your preferences. These notes support [GitHub-flavored Markdown](https://guides.github.com/features/mastering-markdown/) (similar to message formatting on Discord). You can also specify the following variables, which will be replaced by your current queue settings: `{open}`, `{maxPending}`, `{cooldown}`.
+
+For example, consider the following notes:
+```
+## Status: {open}
+- This queue automatically closes after _{maxPending} requests_.
+- After requesting, you need to wait {cooldown} days before requesting again.
+- Anime is **banned**
+```
+
+Once you save the notes, it'll appear like this:
+
+![image](https://user-images.githubusercontent.com/8433005/111926242-7ba93380-8a82-11eb-9779-0a7f61aec975.png)
+
+
 ### Settings Tab
 
 When logged in and on your own queue, there should be a settings tab. The settings tab has the following options:
