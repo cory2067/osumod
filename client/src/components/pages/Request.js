@@ -13,6 +13,8 @@ import { navigate } from "@reach/router";
 
 const { Content } = Layout;
 
+const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md#request-tab";
+
 const layout = {
   labelCol: {
     span: 6,
@@ -139,7 +141,12 @@ class Request extends Component {
           )}
           <div className="Request-container Request-notes">
             {this.state.editingNotes ? (
-              <TextArea rows={8} value={this.state.notes} onChange={this.handleNoteChange} />
+              <>
+                <TextArea rows={8} value={this.state.notes} onChange={this.handleNoteChange} />
+                <a href={HELP_URL} target="_blank">
+                  Formatting help
+                </a>
+              </>
             ) : (
               <ReactMarkdown plugins={[gfm]} children={this.insertVariables(this.state.notes)} />
             )}
