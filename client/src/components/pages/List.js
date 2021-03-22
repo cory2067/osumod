@@ -11,8 +11,10 @@ import MapCard from "../modules/MapCard";
 const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
-const BANNER_KEY = "closedBanner"
-const BANNER_VERSION = "1"
+
+const BANNER_KEY = "closedBanner";
+const BANNER_ENABLED = false;
+const BANNER_VERSION = "1";
 
 class List extends Component {
   constructor(props) {
@@ -103,12 +105,16 @@ class List extends Component {
   render() {
     return (
       <Content className="content">
-        {this.isOwner() && this.state.showDiscordInvite && (
+        {BANNER_ENABLED && this.isOwner() && this.state.showDiscordInvite && (
           <Alert
             message={
               <>
                 <div>
-                  Thanks for using osumod! <a href={DISCORD_URL} target="_blank">Click here</a> to join the osumod discord (invite link fixed now!)
+                  Thanks for using osumod!{" "}
+                  <a href={DISCORD_URL} target="_blank">
+                    Click here
+                  </a>{" "}
+                  to join the osumod discord (invite link fixed now!)
                 </div>
               </>
             }

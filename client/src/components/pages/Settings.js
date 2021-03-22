@@ -19,6 +19,7 @@ const { Content } = Layout;
 const { Paragraph } = Typography;
 
 const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md";
+const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
 
 function Settings({ owner }) {
   const form = React.createRef();
@@ -60,7 +61,12 @@ function Settings({ owner }) {
             <a href={HELP_URL} target="_blank">
               Click here
             </a>{" "}
-            for instructions on how to use your queue.
+            for instructions on how to use your queue. For feature requests and to be notified about
+            website updates, join the osumod Discord server{" "}
+            <a href={DISCORD_URL} target="_blank">
+              here
+            </a>
+            .
           </Paragraph>
           <Paragraph>
             Mappers can request you at: <a href={reqLink}>{reqLink}</a>
