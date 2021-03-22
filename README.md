@@ -28,7 +28,7 @@ For example, consider the following notes:
 
 Once you save the notes, it'll appear like this:
 
-![image](https://user-images.githubusercontent.com/8433005/111925915-0ab54c00-8a81-11eb-94c6-1a06b5e05986.png)
+![image](https://user-images.githubusercontent.com/8433005/111926242-7ba93380-8a82-11eb-9779-0a7f61aec975.png)
 
 
 ### Settings Tab
