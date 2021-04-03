@@ -24,6 +24,21 @@ const round = (num) => Math.round(num * 100) / 100;
 const formatTime = (time) =>
   Math.floor(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + Math.floor(time % 60);
 
+const getVersionAttribute = (beatmap) => {
+  const name = beatmap.version;
+
+  // put key count in front of osu!mania diff names if not indicated
+  // (should be removed if switching to osu!api v2)
+  if (beatmap.mode == 3) {
+    const keys = beatmap.diff_size;
+
+    if (!name.includes(keys + "k") && !name.includes(keys + "K"))
+      return "[" + keys + "K] " + name;
+  }
+
+  return name;
+}
+
 const getMapData = async (id) => {
   const mapData = await osuApi.getBeatmaps({ s: id });
 
@@ -36,7 +51,7 @@ const getMapData = async (id) => {
     length: formatTime(parseInt(mapData[0].length.total)),
     diffs: mapData
       .map((diff) => ({
-        name: diff.version,
+        name: getVersionAttribute(diff),
         mode: diff.mode,
         sr: round(parseFloat(diff.difficulty.rating)),
       }))
