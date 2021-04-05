@@ -40,6 +40,20 @@ const getDiffName = (beatmap) => {
   return name;
 };
 
+const modes = { Standard: 0, Taiko: 1, "Catch the Beat": 2, Mania: 3 };
+const sortDiffs = (a, b) => {
+  const modeComparison = modes[a.mode] - modes[b.mode];
+  if (modeComparison) return modeComparison;
+
+  if (a.mode === "Mania" && b.mode === "Mania") {
+    console.log(a, b);
+    const keyComparison = a.keys - b.keys;
+    if (keyComparison) return keyComparison;
+  }
+
+  return a.sr - b.sr;
+};
+
 const getMapData = async (id) => {
   const mapData = await osuApi.getBeatmaps({ s: id });
 
@@ -54,9 +68,10 @@ const getMapData = async (id) => {
       .map((diff) => ({
         name: getDiffName(diff),
         mode: diff.mode,
+        keys: diff.difficulty.size ? parseInt(diff.difficulty.size) : 0, // for mania
         sr: round(parseFloat(diff.difficulty.rating)),
       }))
-      .sort((a, b) => a.sr - b.sr),
+      .sort(sortDiffs),
     status: mapData[0].approvalStatus,
     image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
   };
