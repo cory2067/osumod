@@ -46,7 +46,6 @@ const sortDiffs = (a, b) => {
   if (modeComparison) return modeComparison;
 
   if (a.mode === "Mania" && b.mode === "Mania") {
-    console.log(a, b);
     const keyComparison = a.keys - b.keys;
     if (keyComparison) return keyComparison;
   }
