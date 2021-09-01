@@ -24,6 +24,35 @@ const round = (num) => Math.round(num * 100) / 100;
 const formatTime = (time) =>
   Math.floor(time / 60) + ":" + (time % 60 < 10 ? "0" : "") + Math.floor(time % 60);
 
+const getDiffName = (beatmap) => {
+  const name = beatmap.version;
+
+  // put key count in front of osu!mania diff names if not indicated
+  // (should be removed if switching to osu!api v2)
+  if (beatmap.mode === "Mania") {
+    const keys = beatmap.difficulty.size;
+
+    if (!name.includes(keys + "k") && !name.includes(keys + "K")) {
+      return `[${keys}K] ${name}`;
+    }
+  }
+
+  return name;
+};
+
+const modes = { Standard: 0, Taiko: 1, "Catch the Beat": 2, Mania: 3 };
+const sortDiffs = (a, b) => {
+  const modeComparison = modes[a.mode] - modes[b.mode];
+  if (modeComparison) return modeComparison;
+
+  if (a.mode === "Mania" && b.mode === "Mania") {
+    const keyComparison = a.keys - b.keys;
+    if (keyComparison) return keyComparison;
+  }
+
+  return a.sr - b.sr;
+};
+
 const getMapData = async (id) => {
   const mapData = await osuApi.getBeatmaps({ s: id });
 
@@ -36,11 +65,12 @@ const getMapData = async (id) => {
     length: formatTime(parseInt(mapData[0].length.total)),
     diffs: mapData
       .map((diff) => ({
-        name: diff.version,
+        name: getDiffName(diff),
         mode: diff.mode,
+        keys: diff.difficulty.size ? parseInt(diff.difficulty.size) : 0, // for mania
         sr: round(parseFloat(diff.difficulty.rating)),
       }))
-      .sort((a, b) => a.sr - b.sr),
+      .sort(sortDiffs),
     status: mapData[0].approvalStatus,
     image: `https://assets.ppy.sh/beatmaps/${mapData[0].beatmapSetId}/covers/cover.jpg`,
   };
