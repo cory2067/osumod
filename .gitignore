@@ -3,3 +3,4 @@ client/dist/*bundle.js*
 .env
 logs.txt
 backups
+scripts/*.json

@@ -4,7 +4,7 @@ const logger = require("pino")(); // import pino logger
 module.exports = {
   init: () => {
     // connect to mongodb
-    mongoose
+    return mongoose
       .connect(process.env.MONGO_SRV, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
