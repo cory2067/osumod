@@ -15,7 +15,13 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.form = React.createRef();
-    this.state = { queues: [], creating: false, loading: true };
+    this.state = {
+      queues: [],
+      creating: false,
+      loading: true,
+      mode: localStorage.getItem("mode"),
+      modderType: localStorage.getItem("modderType"),
+    };
   }
 
   componentDidMount() {
@@ -45,7 +51,6 @@ class Home extends Component {
     let ok = true;
     if (this.state.mode) {
       ok = ok && queue.modes.includes(this.state.mode);
-      console.log(ok);
     }
 
     if (this.state.modderType === "bn") {
@@ -95,13 +100,25 @@ class Home extends Component {
 
           <div className="Home-filters">
             <span>Filters</span>
-            <Radio.Group onChange={(e) => this.setState({ mode: e.target.value })}>
+            <Radio.Group
+              value={this.state.mode}
+              onChange={(e) => {
+                this.setState({ mode: e.target.value });
+                localStorage.setItem("mode", e.target.value);
+              }}
+            >
               <Radio.Button value="Standard">Standard</Radio.Button>
               <Radio.Button value="Taiko">Taiko</Radio.Button>
               <Radio.Button value="Catch the Beat">Catch</Radio.Button>
               <Radio.Button value="Mania">Mania</Radio.Button>
             </Radio.Group>
-            <Radio.Group onChange={(e) => this.setState({ modderType: e.target.value })}>
+            <Radio.Group
+              value={this.state.modderType}
+              onChange={(e) => {
+                this.setState({ modderType: e.target.value });
+                localStorage.setItem("modderType", e.target.value);
+              }}
+            >
               <Radio.Button value="bn">Beatmap Nominators</Radio.Button>
               <Radio.Button value="modder">Modders</Radio.Button>
             </Radio.Group>
