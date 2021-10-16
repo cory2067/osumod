@@ -16,3 +16,26 @@
 .List-buttoncontainer button {
   margin: 0px 2px;
 }
+
+.List-compact-status {
+  font-size: 15pt;
+}
+
+.List-compact-status .MapCard-status {
+  margin-right: var(--xs);
+}
+
+.List-compact-comment {
+  font-size: 18pt;
+  text-align: center;
+}
+
+.List-compact-toggle {
+  position: absolute;
+  right: 0;
+  padding-right: inherit;
+}
+
+.List-compact-toggle-label {
+  padding-right: var(--s);
+}

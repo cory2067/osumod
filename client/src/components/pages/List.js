@@ -3,11 +3,24 @@ import "../../utilities.css";
 import "./List.css";
 
 // data from "../../content/home-en";
-import { Layout, Button, Modal, Input, Form, Select, Switch, Alert, message } from "antd";
+import {
+  Layout,
+  Button,
+  Modal,
+  Input,
+  Form,
+  Select,
+  Switch,
+  Table,
+  Alert,
+  message,
+  Tooltip,
+} from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
 import { delet, get, post } from "../../utilities";
-import MapCard from "../modules/MapCard";
+import MapCard, { DiffList, StatusLabel } from "../modules/MapCard";
+import Icon, { MessageOutlined } from "@ant-design/icons";
 const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
@@ -15,6 +28,8 @@ const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
 const BANNER_KEY = "closedBanner";
 const BANNER_ENABLED = false;
 const BANNER_VERSION = "1";
+
+const COMPACT_KEY = "compactMode";
 
 class List extends Component {
   constructor(props) {
@@ -25,6 +40,7 @@ class List extends Component {
       editing: null,
       showDiscordInvite: localStorage.getItem(BANNER_KEY) !== BANNER_VERSION,
       loading: false,
+      compact: localStorage.getItem(COMPACT_KEY) === "true",
     };
   }
 
@@ -104,7 +120,85 @@ class List extends Component {
     return "Modding Queue";
   };
 
+  toggleCompact = () =>
+    this.setState((state) => {
+      localStorage.setItem(COMPACT_KEY, !state.compact);
+      return {
+        compact: !state.compact,
+      };
+    });
+
   render() {
+    // Table config for compact mode
+    const columns = [
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        width: 160,
+        render: (status, map) => (
+          <span className="List-compact-status">
+            <StatusLabel {...map} edit={this.edit} />
+          </span>
+        ),
+      },
+      {
+        title: "Title",
+        dataIndex: "title",
+        key: "title",
+        render: (title, map) => (
+          <a
+            target="_blank"
+            href={
+              map.mapsetId
+                ? `https://osu.ppy.sh/s/${map.mapsetId}`
+                : `https://osu.ppy.sh/b/${map.mapId}`
+            }
+          >
+            {title}
+          </a>
+        ),
+      },
+      { title: "Artist", dataIndex: "artist", key: "artist" },
+      { title: "Mapper", dataIndex: "creator", key: "creator" },
+      { title: "Length", dataIndex: "length", key: "length" },
+      { title: "BPM", dataIndex: "bpm", key: "bpm" },
+      {
+        title: "Difficulties",
+        dataIndex: "diffs",
+        key: "diffs",
+        render: (diffs) => <DiffList diffs={diffs} />,
+      },
+      {
+        title: "Mapper's Comment",
+        dataIndex: "comment",
+        key: "comment",
+        width: 50,
+        render: (c) =>
+          c && (
+            <div className="List-compact-comment">
+              <Tooltip title={c}>
+                <MessageOutlined />
+              </Tooltip>
+            </div>
+          ),
+      },
+      {
+        title: "Feedback",
+        dataIndex: "feedback",
+        key: "feedback",
+        width: 50,
+        render: (c) =>
+          c && (
+            <div className="List-compact-comment">
+              <Tooltip title={c}>
+                <MessageOutlined />
+              </Tooltip>
+            </div>
+          ),
+      },
+    ];
+
     return (
       <Content className="content">
         {BANNER_ENABLED && this.isOwner() && this.state.showDiscordInvite && (
@@ -128,21 +222,35 @@ class List extends Component {
             }}
           />
         )}
+        <div className="List-compact-toggle">
+          <span className="List-compact-toggle-label">Table Mode:</span>
+          <Switch checked={this.state.compact} onClick={this.toggleCompact} />
+        </div>
+
         {this.state.modderType && (
           <h1 className="List-header">
             {this.props.owner}'s {this.titleText()}
           </h1>
         )}
         <div className="List-container">
-          {this.state.reqs.map((req) => (
-            <MapCard
-              {...req}
-              edit={this.edit}
-              key={req._id}
-              compact={this.props.archived}
-              showModType={this.state.m4m && !this.props.archived}
+          {this.state.compact ? (
+            <Table
+              className="List-table"
+              columns={columns}
+              dataSource={this.state.reqs}
+              pagination={{ pageSize: 50 }}
             />
-          ))}
+          ) : (
+            this.state.reqs.map((req) => (
+              <MapCard
+                {...req}
+                edit={this.edit}
+                key={req._id}
+                compact={this.props.archived}
+                showModType={this.state.m4m && !this.props.archived}
+              />
+            ))
+          )}
         </div>
         <Modal
           title="Manage Request"

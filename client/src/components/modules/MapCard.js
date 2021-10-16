@@ -34,6 +34,37 @@ const colors = {
   Ranked: "#eb2f96",
 };
 
+export function DiffList({ diffs }) {
+  return (
+    <div className="MapCard-diff-list">
+      {diffs.map((diff) => (
+        <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
+          <span>
+            <ModeIcon {...diff} />
+          </span>
+        </Tooltip>
+      ))}
+    </div>
+  );
+}
+
+export function StatusLabel(props) {
+  const StatusIcon = icons[props.status] || InfoCircleTwoTone;
+  const lang = window.navigator.userLanguage || window.navigator.language || "en-US";
+  return (
+    <div>
+      <StatusIcon
+        twoToneColor={colors[props.status]}
+        onClick={() => props.edit && props.edit(props)}
+        className="MapCard-status"
+      />
+      <Tooltip
+        title={`Requested ${new Date(props.requestDate).toLocaleDateString(lang)}`}
+      >{` ${props.status}`}</Tooltip>
+    </div>
+  );
+}
+
 class MapCard extends Component {
   constructor(props) {
     super(props);
@@ -46,22 +77,11 @@ class MapCard extends Component {
       : `https://osu.ppy.sh/b/${this.props.mapId}`;
 
   render() {
-    let StatusIcon = icons[this.props.status] || InfoCircleTwoTone;
-
     return (
       <Card
         title={
           <div className="MapCard-title">
-            <div>
-              <StatusIcon
-                twoToneColor={colors[this.props.status]}
-                onClick={() => this.props.edit && this.props.edit(this.props)}
-                className="MapCard-status"
-              />
-              <Tooltip
-                title={`Requested ${new Date(this.props.requestDate).toLocaleDateString("en-US")}`}
-              >{` ${this.props.status}`}</Tooltip>
-            </div>
+            <StatusLabel {...this.props} />
             {this.props.showModType && (
               <div className="MapCard-mod-type">{this.props.m4m ? "M4M" : "NM"}</div>
             )}
@@ -116,15 +136,7 @@ class MapCard extends Component {
         {!this.props.compact && (
           <>
             <div className="MapCard-divider"></div>
-            <div className="MapCard-diff-list">
-              {this.props.diffs.map((diff) => (
-                <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
-                  <span>
-                    <ModeIcon {...diff} />
-                  </span>
-                </Tooltip>
-              ))}
-            </div>
+            <DiffList diffs={this.props.diffs} />
           </>
         )}
       </Card>

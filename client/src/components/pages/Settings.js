@@ -81,7 +81,6 @@ function Settings({ owner }) {
             Mappers can request you at: <a href={reqLink}>{reqLink}</a>
           </Paragraph>
           <hr />
-
           <Title level={4}>Queue settings</Title>
           <Form initialValues={settings} onFinish={onFinish}>
             <Form.Item label="Open" name="open" valuePropName="checked">
@@ -120,7 +119,6 @@ function Settings({ owner }) {
               </Button>
             </Form.Item>
           </Form>
-
           <hr />
           <Title level={4}>Archive requests in bulk</Title>
           <Form initialValues={{ status: "any", age: 30 }} onFinish={onArchive}>
