@@ -1,3 +1,7 @@
+.Settings-wrapper {
+  max-width: 500px;
+}
+
 .Settings-button-container button {
   margin: 0px 2px;
 }

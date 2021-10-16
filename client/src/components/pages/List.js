@@ -44,14 +44,16 @@ class List extends Component {
 
   isOwner = () => this.props.user && this.props.user.username === this.props.owner;
 
-  loadingWrapper = (fn) => async (...args) => {
-    this.setState({ loading: true });
-    try {
-      await fn(...args);
-    } finally {
-      this.setState({ loading: false });
-    }
-  };
+  loadingWrapper =
+    (fn) =>
+    async (...args) => {
+      this.setState({ loading: true });
+      try {
+        await fn(...args);
+      } finally {
+        this.setState({ loading: false });
+      }
+    };
 
   edit = (req) => {
     if (!this.isOwner()) return;

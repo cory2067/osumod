@@ -390,6 +390,30 @@ router.postAsync("/notes", ensure.loggedIn, async (req, res) => {
 });
 
 /**
+ * POST /api/archive-batch
+ * Archive many requests
+ * Params:
+ *   - status: if set, archive all maps with this status
+ *   - age: if set, archive all request this many days old
+ */
+router.postAsync("/archive-batch", ensure.loggedIn, async (req, res) => {
+  req.body.status;
+
+  const query = { target: req.user.username, archived: false };
+  if (req.body.status && req.body.status !== "any") {
+    query.status = req.body.status;
+  }
+  if (req.body.age && !isNaN(req.body.age)) {
+    const date = new Date();
+    date.setDate(date.getDate() - req.body.age);
+    query.requestDate = { $lt: date };
+  }
+
+  const result = await Request.updateMany(query, { $set: { archived: true } });
+  res.send({ modified: result.nModified });
+});
+
+/**
  * GET /api/whoami
  * Returns the identity of the currently logged in user
  */

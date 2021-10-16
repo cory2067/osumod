@@ -16,7 +16,7 @@ import {
 import { get, post } from "../../utilities";
 import { navigate } from "@reach/router";
 const { Content } = Layout;
-const { Paragraph } = Typography;
+const { Paragraph, Title } = Typography;
 
 const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md";
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
@@ -40,13 +40,22 @@ function Settings({ owner }) {
       message.success("Updated settings");
     } catch (e) {
       console.log(e);
-      message.success("Failed to update settings");
+      message.error("Failed to update settings");
     }
   };
 
   const onDelete = async () => {
     await post("/api/archive-queue");
     navigate("/");
+  };
+
+  const onArchive = async ({ status, age }) => {
+    const res = await post("/api/archive-batch", { status, age });
+    if (res.modified === 0) {
+      message.info("No requests to archive");
+    } else {
+      message.success(`Archived ${res.modified} requests`);
+    }
   };
 
   const reqLink = `${window.location.protocol}//${window.location.host}/${
@@ -56,7 +65,7 @@ function Settings({ owner }) {
   return (
     <Content className="content">
       {settings && (
-        <div style={{ maxWidth: 500 }}>
+        <div className="Settings-wrapper">
           <Paragraph>
             <a href={HELP_URL} target="_blank">
               Click here
@@ -71,6 +80,9 @@ function Settings({ owner }) {
           <Paragraph>
             Mappers can request you at: <a href={reqLink}>{reqLink}</a>
           </Paragraph>
+          <hr />
+
+          <Title level={4}>Queue settings</Title>
           <Form initialValues={settings} onFinish={onFinish}>
             <Form.Item label="Open" name="open" valuePropName="checked">
               <Switch />
@@ -105,6 +117,36 @@ function Settings({ owner }) {
               </Button>
               <Button type="secondary" onClick={() => setShowDeleteModal(true)}>
                 Delete Queue
+              </Button>
+            </Form.Item>
+          </Form>
+
+          <hr />
+          <Title level={4}>Archive requests in bulk</Title>
+          <Form initialValues={{ status: "any", age: 30 }} onFinish={onArchive}>
+            <Form.Item label="Archive request with this status:" name="status">
+              <Select>
+                <Select.Option value="any">Any</Select.Option>
+                <Select.Option value="Pending">Pending</Select.Option>
+                <Select.Option value="Rejected">Rejected</Select.Option>
+                <Select.Option value="Accepted">Accepted</Select.Option>
+                {settings.modderType === "probation" || settings.modderType === "full" ? (
+                  <>
+                    <Select.Option value="Modded">Modded</Select.Option>
+                    <Select.Option value="Nominated">Nominated</Select.Option>
+                    <Select.Option value="Ranked">Ranked</Select.Option>
+                  </>
+                ) : (
+                  <Select.Option value="Finished">Finished</Select.Option>
+                )}
+              </Select>
+            </Form.Item>
+            <Form.Item label="And are at least this many days old:" name="age">
+              <InputNumber />
+            </Form.Item>
+            <Form.Item className="Settings-button-container">
+              <Button type="primary" htmlType="submit">
+                Archive
               </Button>
             </Form.Item>
           </Form>
