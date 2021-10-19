@@ -31,6 +31,17 @@ const BANNER_VERSION = "1";
 
 const COMPACT_KEY = "compactMode";
 
+const STATUS_TO_ORDER = {
+  Accepted: 0,
+  Pending: 1,
+  Modded: 2,
+  Finished: 3,
+  Nominated: 4,
+  Qualified: 5,
+  Ranked: 6,
+  Rejected: 7,
+};
+
 class List extends Component {
   constructor(props) {
     super(props);
@@ -141,6 +152,7 @@ class List extends Component {
             <StatusLabel {...map} edit={this.edit} />
           </span>
         ),
+        sorter: (a, b) => STATUS_TO_ORDER[a.status] - STATUS_TO_ORDER[b.status],
       },
       {
         title: "Title",
