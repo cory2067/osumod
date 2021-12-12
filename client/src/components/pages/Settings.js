@@ -12,6 +12,7 @@ import {
   message,
   Typography,
   Modal,
+  Spin,
 } from "antd";
 import { get, post } from "../../utilities";
 import { navigate } from "@reach/router";
@@ -21,20 +22,29 @@ const { Paragraph, Title } = Typography;
 const HELP_URL = "https://github.com/cory2067/osumod/blob/master/README.md";
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
 
-function Settings({ owner }) {
-  const form = React.createRef();
+function Settings({ user, updateUser }) {
   const [settings, setSettings] = useState();
+  const [loading, setLoading] = useState();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
+    document.title = `Queue Settings`;
+  }, []);
+
+  useEffect(() => {
     (async () => {
-      const res = await get("/api/settings", { owner });
-      if (!res) navigate("/404");
-      setSettings(res);
+      if (!user._id) return;
+      try {
+        const res = await get("/api/settings", { owner: user.userid });
+        setSettings(res.queue);
+      } catch (e) {
+        navigate("/404");
+      }
     })();
-  }, [owner]);
+  }, [user]);
 
   const onFinish = async (form) => {
+    setLoading("save-settings");
     try {
       await post("/api/settings", { settings: form });
       message.success("Updated settings");
@@ -42,6 +52,7 @@ function Settings({ owner }) {
       console.log(e);
       message.error("Failed to update settings");
     }
+    setLoading("");
   };
 
   const onDelete = async () => {
@@ -50,7 +61,9 @@ function Settings({ owner }) {
   };
 
   const onArchive = async ({ status, age }) => {
+    setLoading("archive");
     const res = await post("/api/archive-batch", { status, age });
+    setLoading("");
     if (res.modified === 0) {
       message.info("No requests to archive");
     } else {
@@ -58,13 +71,23 @@ function Settings({ owner }) {
     }
   };
 
-  const reqLink = `${window.location.protocol}//${window.location.host}/${
-    window.location.pathname.split("/")[1]
-  }/request`;
+  const onUsernameUpdate = async () => {
+    setLoading("update-username");
+    try {
+      const user = await post("/api/update-username");
+      message.success("Updated username");
+    } catch (e) {
+      message.error("Something went wrong");
+    }
+    updateUser(user);
+    setLoading("");
+  };
+
+  const reqLink = `${window.location.protocol}//${window.location.host}/${user.username}/request`;
 
   return (
     <Content className="content">
-      {settings && (
+      {settings && user._id ? (
         <div className="Settings-wrapper">
           <Paragraph>
             <a href={HELP_URL} target="_blank">
@@ -111,7 +134,7 @@ function Settings({ owner }) {
               </Select>
             </Form.Item>
             <Form.Item className="Settings-button-container">
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading === "save-settings"}>
                 Save Settings
               </Button>
               <Button type="secondary" onClick={() => setShowDeleteModal(true)}>
@@ -143,11 +166,28 @@ function Settings({ owner }) {
               <InputNumber />
             </Form.Item>
             <Form.Item className="Settings-button-container">
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={loading === "archive"}>
                 Archive
               </Button>
             </Form.Item>
           </Form>
+          <hr />
+          <Title level={4}>Update Username</Title>
+          <Paragraph>
+            This will get your latest username from osu! and rename your queue accordingly. Note
+            that this will change your queue's URL.
+          </Paragraph>
+          <Button
+            type="primary"
+            onClick={() => onUsernameUpdate()}
+            loading={loading === "update-username"}
+          >
+            Update
+          </Button>
+        </div>
+      ) : (
+        <div className="Settings-loading">
+          <Spin size="large" />
         </div>
       )}
 

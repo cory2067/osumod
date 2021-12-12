@@ -15,7 +15,18 @@ class Navbar extends Component {
   }
 
   render() {
-    const owner = window.location.pathname.split("/")[1];
+    const urlSegment = window.location.pathname.split("/")[1];
+    const showSettings = () => {
+      if (window.location.pathname == "/settings") return true;
+      const username = this.props.user.username;
+      const userId = this.props.user.userid;
+      const owner = decodeURIComponent(urlSegment);
+      if (!username) return false;
+      return owner.replace(/_/g, " ").toLowerCase() === username.toLowerCase() || owner == userId;
+    };
+
+    const userPath = urlSegment === "settings" ? this.props.user.username : urlSegment;
+
     return (
       <>
         <Header>
@@ -25,17 +36,17 @@ class Navbar extends Component {
                 <Link to={`/`}>Home</Link>
               </Menu.Item>
               <Menu.Item key="1">
-                <Link to={`/${owner}/`}>Queue</Link>
+                <Link to={`/${userPath}/`}>Queue</Link>
               </Menu.Item>
               <Menu.Item key="2">
-                <Link to={`/${owner}/request`}>Request</Link>
+                <Link to={`/${userPath}/request`}>Request</Link>
               </Menu.Item>
               <Menu.Item key="3">
-                <Link to={`/${owner}/archives`}>Archives</Link>
+                <Link to={`/${userPath}/archives`}>Archives</Link>
               </Menu.Item>
-              {this.props.user.username === decodeURIComponent(owner) && (
+              {showSettings() && (
                 <Menu.Item key="settings">
-                  <Link to={`/${owner}/settings`}>Settings</Link>
+                  <Link to={`/settings`}>Settings</Link>
                 </Menu.Item>
               )}
               <Menu.Item key="4">

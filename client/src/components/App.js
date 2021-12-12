@@ -56,7 +56,7 @@ class App extends Component {
             <List path="/:owner" user={this.state.user} archived={false} />
             <List path="/:owner/archives" user={this.state.user} archived={true} />
             <Request path="/:owner/request" user={this.state.user} />
-            <Settings path="/:owner/settings" user={this.state.user} />
+            <Settings path="/settings" user={this.state.user} updateUser={this.updateUser} />
             <NotFound default />
           </Router>
           <Footer></Footer>

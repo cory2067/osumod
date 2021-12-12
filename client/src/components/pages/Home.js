@@ -25,14 +25,14 @@ class Home extends Component {
   }
 
   componentDidMount() {
-    get("/api/queues").then((queues) =>
+    get("/api/queues").then((queues) => {
       this.setState({
         loading: false,
         queues,
         hasQueue:
-          this.props.user && queues.filter((q) => q.owner === this.props.user.username).length,
-      })
-    );
+          this.props.user && queues.filter((q) => q.owner._id === this.props.user._id).length,
+      });
+    });
   }
 
   create = async () => {

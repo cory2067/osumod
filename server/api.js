@@ -93,6 +93,28 @@ const getMapsetIdFromRequest = async (req) => {
   return (await osuApi.getBeatmaps({ b: req.mapId }))[0].beatmapSetId;
 };
 
+// Get user, given the username (case insensitive, spaces can be underscore) or osu! user id
+const getUserObj = async (identifier) => {
+  let regex = `^${identifier}$`;
+  if (identifier.includes("_")) {
+    const withSpaces = identifier.replace(/_/g, " ");
+    regex += `|^${withSpaces}$`;
+  }
+
+  console.log(regex);
+
+  // Get owner, falling back to userid
+  const user =
+    (await User.findOne({
+      username: { $regex: new RegExp(regex, "i") },
+    })) ||
+    (await User.findOne({
+      userid: identifier,
+    }));
+
+  return user;
+};
+
 /**
  * POST /api/request
  * Submit a new request
@@ -100,7 +122,7 @@ const getMapsetIdFromRequest = async (req) => {
  *   - id: ID of the mapset
  *   - comment: comments by the requester
  *   - m4m: is this a m4m request
- *   - target: whose queue to request
+ *   - targetId: whose user to request (user _id)
  * Returns the newly-created Map document
  */
 router.postAsync("/request", ensure.loggedIn, async (req, res) => {
@@ -116,8 +138,10 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
 
   const now = new Date();
   const [settings, lastReq] = await Promise.all([
-    Settings.findOne({ owner: req.body.target }),
-    Request.findOne({ user: req.user.userid, target: req.body.target }).sort({ requestDate: -1 }),
+    Settings.findOne({ ownerId: req.body.targetId }),
+    Request.findOne({ user: req.user.userid, targetId: req.body.targetId }).sort({
+      requestDate: -1,
+    }),
   ]);
 
   let errors = [];
@@ -170,7 +194,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
   }
 
   // owner can bypass all restrictions
-  if (req.user.username === req.body.target) errors = [];
+  if (req.user._id == req.body.targetId) errors = [];
 
   if (errors.length) {
     logger.info(`${req.user.username} caused these errors: ${errors.join(", ")}`);
@@ -181,20 +205,23 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       status: "Pending",
       user: req.user.userid,
       requestDate: now,
-      target: req.body.target,
+      targetId: req.body.targetId,
       m4m: req.body.m4m || false,
       comment: req.body.comment || "",
       archived: false,
     });
     await request.save();
 
-    const numPending = await Request.countDocuments({ status: "Pending", target: req.body.target });
+    const numPending = await Request.countDocuments({
+      status: "Pending",
+      targetId: req.body.targetId,
+    });
     if (numPending >= settings.maxPending) {
       logger.info(`Now closing requests`);
-      await Settings.updateOne({ owner: req.body.target }, { $set: { open: false } });
+      await Settings.updateOne({ owner: req.body.targetId }, { $set: { open: false } });
     }
 
-    logger.info(`${req.user.username} succesfully requested ${map.title} to ${req.body.target}`);
+    logger.info(`${req.user.username} succesfully requested ${map.title} to ${req.body.targetId}`);
     res.send({ map: request, errors });
   }
 });
@@ -207,8 +234,13 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
  *   - target: whose queue to retrieve
  */
 router.getAsync("/requests", async (req, res) => {
+  const user = await getUserObj(req.query.target);
+  if (!user) {
+    return res.status(404).send({ err: "No such user" });
+  }
+
   const requests = await Request.find({
-    target: req.query.target,
+    targetId: user._id,
     archived: req.query.archived,
   }).sort({ requestDate: -1 });
   res.send(requests);
@@ -225,7 +257,7 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
   // ensure it can only be deleted by the requester or the queue owner
   await Request.deleteOne({
     _id: req.body.id,
-    $or: [{ user: req.user.userid }, { target: req.user.username }],
+    $or: [{ user: req.user.userid }, { targetId: req.user._id }],
   });
   res.send({});
 });
@@ -234,6 +266,7 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
  * POST /api/request-edit
  * Edit an existing request
  * Params:
+ *   - id: id of the request
  *   - feedback: Some feedback by the queue owner
  *   - status: request status (e.g. accepted, rejected, nominated)
  *   - archived: whether the request is archived
@@ -242,7 +275,7 @@ router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} edited request ${req.body.id}`);
   // query for "target" ensures that the user can't modify requests on someone else's queue
   const updated = await Request.findOneAndUpdate(
-    { _id: req.body.id, target: req.user.username },
+    { _id: req.body.id, targetId: req.user._id },
     { $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived } },
     { new: true }
   );
@@ -257,7 +290,6 @@ router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
  */
 router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} refreshed request ${req.body.id}`);
-  // query for "target" ensures that the user can't modify requests on someone else's queue
   const request = await Request.findById(req.body.id);
   if (!request) {
     return res.status(400).send({ msg: "request doesn't exist" });
@@ -274,7 +306,7 @@ router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
 
   delete map.status; // don't override what the modder put as map status
   const updated = await Request.findOneAndUpdate(
-    { _id: req.body.id, target: req.user.username },
+    { _id: req.body.id, targetId: req.user._id },
     { $set: map },
     { new: true }
   );
@@ -285,10 +317,19 @@ router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
  * GET /api/settings
  * Get request settings/status
  * params:
- *   - owner: owner of the queue
+ *   - owner: owner of the queue (username, osu userid)
  */
 router.getAsync("/settings", async (req, res) => {
-  res.send(await Settings.findOne({ owner: req.query.owner, archived: { $ne: true } }));
+  const owner = await getUserObj(req.query.owner);
+  if (!owner) {
+    return res.status(404).send({ err: "No such user" });
+  }
+
+  const queue = await Settings.findOne({ ownerId: owner._id, archived: { $ne: true } });
+  if (!queue) {
+    return res.status(404).send({ err: "User has no queue" });
+  }
+  res.send({ queue, owner });
 });
 
 /**
@@ -299,7 +340,7 @@ router.getAsync("/settings", async (req, res) => {
  */
 router.postAsync("/settings", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} updated their settings`);
-  await Settings.findOneAndUpdate({ owner: req.user.username }, { $set: req.body.settings });
+  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: req.body.settings });
   res.send({});
 });
 
@@ -311,7 +352,7 @@ router.postAsync("/settings", ensure.loggedIn, async (req, res) => {
  */
 router.postAsync("/open", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} toggled open to ${req.body.open}`);
-  await Settings.findOneAndUpdate({ owner: req.user.username }, { $set: { open: req.body.open } });
+  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { open: req.body.open } });
   res.send({});
 });
 
@@ -320,10 +361,19 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
  * Get a list of all modding queues
  */
 router.getAsync("/queues", async (req, res) => {
-  const queues = await Settings.find({ archived: { $ne: true } }).select(
-    "open owner modes modderType"
+  const queues = await Settings.find({ archived: { $ne: true } })
+    .select("open ownerId modes modderType")
+    .populate("ownerId");
+
+  // map ownerId -> owner now that it's populated (i should have named this field differently)
+  res.send(
+    queues.map(({ open, ownerId, modes, modderType }) => ({
+      open,
+      owner: ownerId,
+      modes,
+      modderType,
+    }))
   );
-  res.send(queues);
 });
 
 /**
@@ -331,7 +381,7 @@ router.getAsync("/queues", async (req, res) => {
  * Create a queue for oneself
  */
 router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
-  const existing = await Settings.findOne({ owner: req.user.username });
+  const existing = await Settings.findOne({ ownerId: req.user._id });
   if (existing) {
     if (existing.archived) {
       logger.info(`${req.user.username} unarchived their queue`);
@@ -349,7 +399,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     maxPending: 9999,
     cooldown: 0,
     m4m: false,
-    owner: req.user.username,
+    ownerId: req.user._id,
     modes: ["Taiko"],
     modderType: "modder",
   });
@@ -364,7 +414,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
  * Marks the user's queue as archived, making it invisible from the home page
  */
 router.postAsync("/archive-queue", ensure.loggedIn, async (req, res) => {
-  const settings = await Settings.findOne({ owner: req.user.username });
+  const settings = await Settings.findOne({ ownerId: req.user._id });
   if (!settings) {
     return res.status(404).send({ msg: "Queue not found" });
   }
@@ -382,10 +432,7 @@ router.postAsync("/archive-queue", ensure.loggedIn, async (req, res) => {
  */
 router.postAsync("/notes", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} set their queue notes`);
-  await Settings.findOneAndUpdate(
-    { owner: req.user.username },
-    { $set: { notes: req.body.content } }
-  );
+  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { notes: req.body.content } });
   res.send({});
 });
 
@@ -397,9 +444,7 @@ router.postAsync("/notes", ensure.loggedIn, async (req, res) => {
  *   - age: if set, archive all request this many days old
  */
 router.postAsync("/archive-batch", ensure.loggedIn, async (req, res) => {
-  req.body.status;
-
-  const query = { target: req.user.username, archived: false };
+  const query = { targetId: req.user._id, archived: false };
   if (req.body.status && req.body.status !== "any") {
     query.status = req.body.status;
   }
@@ -411,6 +456,20 @@ router.postAsync("/archive-batch", ensure.loggedIn, async (req, res) => {
 
   const result = await Request.updateMany(query, { $set: { archived: true } });
   res.send({ modified: result.nModified });
+});
+
+router.postAsync("/update-username", ensure.loggedIn, async (req, res) => {
+  const osuUser = await osuApi.getUser({ u: req.user.userid });
+  if (!osuUser) {
+    return res.status(404).send({ err: "User no longer exists" });
+  }
+
+  const user = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    { username: osuUser.name },
+    { new: true }
+  );
+  res.send(user);
 });
 
 /**

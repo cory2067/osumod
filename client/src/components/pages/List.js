@@ -55,21 +55,27 @@ class List extends Component {
     };
   }
 
-  componentDidMount() {
-    document.title = `${this.props.owner}'s queue`;
-
+  async componentDidMount() {
     get("/api/requests", {
       archived: this.props.archived,
       target: this.props.owner,
     }).then((reqs) => this.setState({ reqs }));
 
-    get("/api/settings", { owner: this.props.owner }).then((settings) => {
-      if (!settings) navigate("/404");
-      this.setState({ m4m: settings.m4m, modderType: settings.modderType });
-    });
+    get("/api/settings", { owner: this.props.owner })
+      .then((settings) => {
+        this.setState({
+          m4m: settings.queue.m4m,
+          modderType: settings.queue.modderType,
+          owner: settings.owner,
+        });
+        document.title = `${settings.owner.username}'s queue`;
+      })
+      .catch((e) => {
+        navigate("/404");
+      });
   }
 
-  isOwner = () => this.props.user && this.props.user.username === this.props.owner;
+  isOwner = () => this.state.owner && this.props.user._id === this.state.owner._id;
 
   loadingWrapper =
     (fn) =>
@@ -241,7 +247,7 @@ class List extends Component {
 
         {this.state.modderType && (
           <h1 className="List-header">
-            {this.props.owner}'s {this.titleText()}
+            {this.state.owner.username}'s {this.titleText()}
           </h1>
         )}
         <div className="List-container">

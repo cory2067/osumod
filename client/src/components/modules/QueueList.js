@@ -14,7 +14,7 @@ function QueueList({ title, queues, loading }) {
       renderItem={(item) => (
         <List.Item key={item._id}>
           <List.Item.Meta
-            title={<a href={`/${item.owner}`}>{item.owner} </a>}
+            title={<a href={`/${item.owner.username}`}>{item.owner.username} </a>}
             description={
               <span>
                 {item.modderType === "modder" ? "Modder " : "Beatmap Nominator "}
