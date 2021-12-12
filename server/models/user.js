@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   country: String,
   avatar: String,
   discord: String,
-  admin: Boolean,
+  admin: Boolean, // Deprecated
 });
 
 // compile model from schema

@@ -17,7 +17,8 @@ const RequestSchema = new mongoose.Schema({
   status: String,
   image: String,
   archived: Boolean,
-  target: String,
+  target: String, // Deprecated
+  targetId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = mongoose.model("Request", RequestSchema);

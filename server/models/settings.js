@@ -8,7 +8,8 @@ const SettingsSchema = new mongoose.Schema({
   maxPending: Number,
   cooldown: Number,
   m4m: Boolean,
-  owner: String,
+  owner: String, // Deprecated
+  ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   modes: [{ type: String, enum: ["Standard", "Taiko", "Catch the Beat", "Mania"] }],
   modderType: { type: String, enum: ["full", "probation", "modder"] },
   archived: Boolean,
