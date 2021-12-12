@@ -1,41 +1,41 @@
-.List-container {
+.Queue-container {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.List-header {
+.Queue-header {
   font-size: 22pt;
   text-align: center;
 }
 
-.List-buttoncontainer {
+.Queue-buttoncontainer {
   margin-bottom: 0 !important;
 }
 
-.List-buttoncontainer button {
+.Queue-buttoncontainer button {
   margin: 0px 2px;
 }
 
-.List-compact-status {
+.Queue-compact-status {
   font-size: 15pt;
 }
 
-.List-compact-status .MapCard-status {
+.Queue-compact-status .MapCard-status {
   margin-right: var(--xs);
 }
 
-.List-compact-comment {
+.Queue-compact-comment {
   font-size: 18pt;
   text-align: center;
 }
 
-.List-compact-toggle {
+.Queue-compact-toggle {
   position: absolute;
   right: 0;
   padding-right: inherit;
 }
 
-.List-compact-toggle-label {
+.Queue-compact-toggle-label {
   padding-right: var(--s);
 }

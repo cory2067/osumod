@@ -97,7 +97,11 @@ class MapCard extends Component {
       >
         <div className="MapCard-row MapCard-primary">{this.props.title}</div>
         <div className="MapCard-row">{this.props.artist}</div>
-        <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
+        {this.props.requester ? (
+          <div className="MapCard-row">{`Requested to ${this.props.target.username}`}</div>
+        ) : (
+          <div className="MapCard-row">{`Mapset by ${this.props.creator}`}</div>
+        )}
 
         {!this.props.compact && (
           <>

@@ -1,0 +1,18 @@
+.RequestList-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ReqeuestList-compact-status {
+  font-size: 15pt;
+}
+
+.RequestList-compact-status .MapCard-status {
+  margin-right: var(--xs);
+}
+
+.RequestList-compact-comment {
+  font-size: 18pt;
+  text-align: center;
+}

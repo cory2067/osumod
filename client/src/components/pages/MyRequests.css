@@ -1,0 +1,23 @@
+.MyRequests-loading {
+  margin: 40px 0;
+  padding: 30px 50px;
+}
+
+.MyRequests-compact-toggle {
+  position: absolute;
+  right: 0;
+  padding-right: inherit;
+}
+
+.MyRequests-compact-toggle-label {
+  padding-right: var(--s);
+}
+
+.MyRequests-login {
+  margin-top: 20px;
+}
+
+.MyRequests-header {
+  font-size: 22pt;
+  text-align: center;
+}

@@ -10,7 +10,7 @@ class LoginButton extends Component {
   submit = async () => {
     if (this.props.user.username) {
       await fetch("/auth/logout");
-      this.props.updateUser({});
+      this.props.updateUser({ loggedOut: true });
       return;
     }
 

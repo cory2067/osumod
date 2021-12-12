@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import "../../utilities.css";
-import "./List.css";
+import "./Queue.css";
 
-// data from "../../content/home-en";
 import {
   Layout,
   Button,
@@ -20,6 +19,7 @@ const { TextArea } = Input;
 import { navigate } from "@reach/router";
 import { delet, get, post } from "../../utilities";
 import MapCard, { DiffList, StatusLabel } from "../modules/MapCard";
+import RequestList from "../modules/RequestList";
 import Icon, { MessageOutlined } from "@ant-design/icons";
 const { Content } = Layout;
 
@@ -42,7 +42,7 @@ const STATUS_TO_ORDER = {
   Rejected: 7,
 };
 
-class List extends Component {
+class Queue extends Component {
   constructor(props) {
     super(props);
     this.form = React.createRef();
@@ -146,77 +146,6 @@ class List extends Component {
     });
 
   render() {
-    // Table config for compact mode
-    const columns = [
-      {
-        title: "Status",
-        dataIndex: "status",
-        key: "status",
-        width: 160,
-        render: (status, map) => (
-          <span className="List-compact-status">
-            <StatusLabel {...map} edit={this.edit} />
-          </span>
-        ),
-        sorter: (a, b) => STATUS_TO_ORDER[a.status] - STATUS_TO_ORDER[b.status],
-      },
-      {
-        title: "Title",
-        dataIndex: "title",
-        key: "title",
-        render: (title, map) => (
-          <a
-            target="_blank"
-            href={
-              map.mapsetId
-                ? `https://osu.ppy.sh/s/${map.mapsetId}`
-                : `https://osu.ppy.sh/b/${map.mapId}`
-            }
-          >
-            {title}
-          </a>
-        ),
-      },
-      { title: "Artist", dataIndex: "artist", key: "artist" },
-      { title: "Mapper", dataIndex: "creator", key: "creator" },
-      { title: "Length", dataIndex: "length", key: "length" },
-      { title: "BPM", dataIndex: "bpm", key: "bpm" },
-      {
-        title: "Difficulties",
-        dataIndex: "diffs",
-        key: "diffs",
-        render: (diffs) => <DiffList diffs={diffs} />,
-      },
-      {
-        title: "Mapper's Comment",
-        dataIndex: "comment",
-        key: "comment",
-        width: 50,
-        render: (c) =>
-          c && (
-            <div className="List-compact-comment">
-              <Tooltip title={c}>
-                <MessageOutlined />
-              </Tooltip>
-            </div>
-          ),
-      },
-      {
-        title: "Feedback",
-        dataIndex: "feedback",
-        key: "feedback",
-        width: 50,
-        render: (c) =>
-          c && (
-            <div className="List-compact-comment">
-              <Tooltip title={c}>
-                <MessageOutlined />
-              </Tooltip>
-            </div>
-          ),
-      },
-    ];
-
     return (
       <Content className="content">
         {BANNER_ENABLED && this.isOwner() && this.state.showDiscordInvite && (
@@ -240,36 +169,23 @@ class List extends Component {
             }}
           />
         )}
-        <div className="List-compact-toggle">
-          <span className="List-compact-toggle-label">Table Mode:</span>
+        <div className="Queue-compact-toggle">
+          <span className="Queue-compact-toggle-label">Table Mode:</span>
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
 
         {this.state.modderType && (
-          <h1 className="List-header">
+          <h1 className="Queue-header">
             {this.state.owner.username}'s {this.titleText()}
           </h1>
         )}
-        <div className="List-container">
-          {this.state.compact ? (
-            <Table
-              className="List-table"
-              columns={columns}
-              dataSource={this.state.reqs}
-              pagination={{ pageSize: 50 }}
-            />
-          ) : (
-            this.state.reqs.map((req) => (
-              <MapCard
-                {...req}
-                edit={this.edit}
-                key={req._id}
-                compact={this.props.archived}
-                showModType={this.state.m4m && !this.props.archived}
-              />
-            ))
-          )}
-        </div>
+        <RequestList
+          requests={this.state.reqs}
+          tableMode={this.state.compact}
+          archiveMode={this.props.archived}
+          showModType={this.state.m4m && !this.props.archived}
+          onEdit={this.edit}
+        />
         <Modal
           title="Manage Request"
           visible={this.state.editing}
@@ -305,7 +221,7 @@ class List extends Component {
             <Form.Item label="Archived" name="archived" valuePropName="checked">
               <Switch />
             </Form.Item>
-            <Form.Item className="List-buttoncontainer">
+            <Form.Item className="Queue-buttoncontainer">
               <Button type="primary" htmlType="submit" disabled={this.state.loading}>
                 Submit
               </Button>
@@ -323,4 +239,4 @@ class List extends Component {
   }
 }
 
-export default List;
+export default Queue;

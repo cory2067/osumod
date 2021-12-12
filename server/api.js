@@ -230,7 +230,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
 
 /**
  * GET /api/requests
- * Get all requests
+ * Get all requests for a given queue owner
  * params:
  *   - archived: get archived requests
  *   - target: whose queue to retrieve
@@ -246,6 +246,22 @@ router.getAsync("/requests", async (req, res) => {
     archived: req.query.archived,
   }).sort({ requestDate: -1 });
   res.send(requests);
+});
+
+/**
+ * GET /api/my-requests
+ * Get all requests for the currently logged-in user
+ */
+router.getAsync("/my-requests", ensure.loggedIn, async (req, res) => {
+  const requests = await Request.find({
+    user: req.user.userid,
+    targetId: { $ne: req.user._id },
+  })
+    .populate("targetId")
+    .sort({ requestDate: -1 });
+  res.send(
+    requests.map((r) => ({ ...r.toObject(), targetId: r.targetId._id, target: r.targetId }))
+  );
 });
 
 /**
@@ -479,7 +495,7 @@ router.postAsync("/update-username", ensure.loggedIn, async (req, res) => {
  * Returns the identity of the currently logged in user
  */
 router.getAsync("/whoami", async (req, res) => {
-  res.send(req.user || {});
+  res.send(req.user || { loggedOut: true });
 });
 
 router.all("*", (req, res) => {
