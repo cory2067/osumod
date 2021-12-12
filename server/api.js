@@ -93,12 +93,16 @@ const getMapsetIdFromRequest = async (req) => {
   return (await osuApi.getBeatmaps({ b: req.mapId }))[0].beatmapSetId;
 };
 
+function escapeRegExp(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 // Get user, given the username (case insensitive, spaces can be underscore) or osu! user id
 const getUserObj = async (identifier) => {
-  let regex = `^${identifier}$`;
+  let regex = `^${escapeRegExp(identifier)}$`;
   if (identifier.includes("_")) {
     const withSpaces = identifier.replace(/_/g, " ");
-    regex += `|^${withSpaces}$`;
+    regex += `|^${escapeRegExp(withSpaces)}$`;
   }
 
   // Get owner, falling back to userid
