@@ -75,11 +75,11 @@ function Settings({ user, updateUser }) {
     setLoading("update-username");
     try {
       const user = await post("/api/update-username");
+      updateUser(user);
       message.success("Updated username");
     } catch (e) {
       message.error("Something went wrong");
     }
-    updateUser(user);
     setLoading("");
   };
 

@@ -73,13 +73,17 @@ class Home extends Component {
   };
 
   render() {
+    const hasQueue =
+      this.props.user &&
+      this.state.queues.filter((q) => q.owner._id === this.props.user._id).length;
+
     return (
       <Content className="u-flex-justifyCenter">
         <div className="Home-container">
           {!this.state.loading && (
             <div className="Home-create">
               {this.props.user._id ? (
-                this.state.hasQueue ? (
+                hasQueue ? (
                   <Button
                     type="primary"
                     loading={this.state.creating}

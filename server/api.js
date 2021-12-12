@@ -101,8 +101,6 @@ const getUserObj = async (identifier) => {
     regex += `|^${withSpaces}$`;
   }
 
-  console.log(regex);
-
   // Get owner, falling back to userid
   const user =
     (await User.findOne({
