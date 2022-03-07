@@ -31,6 +31,12 @@ function RequestList({ requests, tableMode, archiveMode, requesterMode, showModT
       sorter: (a, b) => STATUS_TO_ORDER[a.status] - STATUS_TO_ORDER[b.status],
     },
     {
+      title: "Type",
+      dataIndex: "m4m",
+      key: "m4m",
+      render: (m4m) => (m4m ? "M4M" : "NM"),
+    },
+    {
       title: "Title",
       dataIndex: "title",
       key: "title",
@@ -87,7 +93,12 @@ function RequestList({ requests, tableMode, archiveMode, requesterMode, showModT
           </div>
         ),
     },
-  ];
+  ].filter((c) => {
+    if (c.title === "Type" && !showModType) {
+      return false;
+    }
+    return true;
+  });
   return (
     <div className="RequestList-container">
       {tableMode ? (
