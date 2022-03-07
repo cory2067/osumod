@@ -25,6 +25,7 @@ class Home extends Component {
   }
 
   componentDidMount() {
+    document.title = "osumod";
     get("/api/queues").then((queues) => {
       this.setState({
         loading: false,

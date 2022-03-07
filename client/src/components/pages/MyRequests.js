@@ -12,6 +12,10 @@ function MyRequests({ user }) {
   const [tableMode, setTableMode] = useState(false);
 
   useEffect(() => {
+    document.title = "My Requests";
+  }, []);
+
+  useEffect(() => {
     if (!user._id) return;
     get("/api/my-requests").then((res) => setRequests(res));
   }, [user]);
