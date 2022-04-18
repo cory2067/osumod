@@ -370,7 +370,10 @@ router.postAsync("/settings", ensure.loggedIn, async (req, res) => {
  */
 router.postAsync("/open", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} toggled open to ${req.body.open}`);
-  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { open: req.body.open } });
+  await Settings.findOneAndUpdate(
+    { ownerId: req.user._id },
+    { $set: { open: req.body.open, lastOpenedDate: new Date() } }
+  );
   res.send({});
 });
 
@@ -380,6 +383,7 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
  */
 router.getAsync("/queues", async (req, res) => {
   const queues = await Settings.find({ archived: { $ne: true } })
+    .sort("-lastOpenedDate")
     .select("open ownerId modes modderType")
     .populate("ownerId");
 

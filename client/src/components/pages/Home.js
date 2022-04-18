@@ -40,7 +40,7 @@ class Home extends Component {
     try {
       this.setState({ creating: true });
       await post("/api/create-queue");
-      navigate(`/${this.props.user.username}/settings`);
+      navigate(`/settings`);
     } catch (e) {
       console.log(e);
       alert("Something went horribly wrong. Please report this issue to Cychloryn.");

@@ -15,6 +15,7 @@ const SettingsSchema = new mongoose.Schema({
   archived: Boolean,
   notes: { type: String, max: 5000 },
   createdDate: Date,
+  lastOpenedDate: Date, // when "open" status was toggled
 });
 
 module.exports = mongoose.model("Settings", SettingsSchema);
