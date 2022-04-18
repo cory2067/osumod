@@ -17,7 +17,7 @@ class NotFound extends Component {
           this queue, you can revive it by simply pushing the "Create Queue" button on the home
           page.
         </p>
-        <p>Contact Cychloryn if you have any questions</p>
+        <p>Contact Cychloryn if you have any questions.</p>
       </Content>
     );
   }

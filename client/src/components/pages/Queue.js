@@ -14,6 +14,7 @@ import {
   Alert,
   message,
   Tooltip,
+  Popconfirm,
 } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
@@ -228,9 +229,11 @@ class Queue extends Component {
               <Button onClick={this.onRefresh} disabled={this.state.loading}>
                 Refresh
               </Button>
-              <Button onClick={this.onDelete} disabled={this.state.loading}>
-                Delete
-              </Button>
+              <Popconfirm title="Permanently delete this request?">
+                <Button onClick={this.onDelete} disabled={this.state.loading}>
+                  Delete
+                </Button>
+              </Popconfirm>
             </Form.Item>
           </Form>
         </Modal>

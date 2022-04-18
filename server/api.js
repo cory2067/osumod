@@ -233,7 +233,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
  * Get all requests for a given queue owner
  * params:
  *   - archived: get archived requests
- *   - target: whose queue to retrieve
+ *   - targetId: whose queue to retrieve
  */
 router.getAsync("/requests", async (req, res) => {
   const user = await getUserObj(req.query.target);
