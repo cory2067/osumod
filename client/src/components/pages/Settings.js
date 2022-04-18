@@ -138,7 +138,7 @@ function Settings({ user, updateUser }) {
                 Save Settings
               </Button>
               <Button type="secondary" onClick={() => setShowDeleteModal(true)}>
-                Delete Queue
+                Archive Queue
               </Button>
             </Form.Item>
           </Form>
@@ -192,13 +192,13 @@ function Settings({ user, updateUser }) {
       )}
 
       <Modal
-        title="Delete Queue"
+        title="Archive Queue"
         visible={showDeleteModal}
         onOk={onDelete}
         onCancel={() => setShowDeleteModal(false)}
-        okText="Delete"
+        okText="Archive"
       >
-        <p>Are you sure you want to delete this queue?</p>
+        <p>Are you sure you want to archive this queue?</p>
         <p>
           If you change your mind, you can click "Create a Queue" on the home page and your settings
           and past requests will be recovered.
