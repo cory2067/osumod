@@ -220,7 +220,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     });
     if (numPending >= settings.maxPending) {
       logger.info(`Now closing requests`);
-      await Settings.updateOne({ owner: req.body.targetId }, { $set: { open: false } });
+      await Settings.updateOne({ ownerId: req.body.targetId }, { $set: { open: false } });
     }
 
     logger.info(`${req.user.username} succesfully requested ${map.title} to ${req.body.targetId}`);
