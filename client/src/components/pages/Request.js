@@ -53,7 +53,6 @@ class Request extends Component {
       const { map, errors } = await post("/api/request", {
         ...form,
         id: match[3],
-        target: this.props.owner, // Deprecated, will remove
         targetId: this.state.owner._id,
       });
       this.setState({ map, errors });

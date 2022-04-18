@@ -408,6 +408,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     if (existing.archived) {
       logger.info(`${req.user.username} unarchived their queue`);
       existing.archived = false;
+      existing.createdDate = new Date();
       await existing.save();
     } else {
       logger.info(`${req.user.username} tried to create a queue, but they already have one`);
@@ -424,7 +425,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     ownerId: req.user._id,
     modes: ["Taiko"],
     modderType: "modder",
-    createDate: new Date(),
+    createdDate: new Date(),
   });
 
   await newSettings.save();
