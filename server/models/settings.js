@@ -14,6 +14,7 @@ const SettingsSchema = new mongoose.Schema({
   modderType: { type: String, enum: ["full", "probation", "modder"] },
   archived: Boolean,
   notes: { type: String, max: 5000 },
+  createdDate: Date,
 });
 
 module.exports = mongoose.model("Settings", SettingsSchema);

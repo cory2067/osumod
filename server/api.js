@@ -420,6 +420,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     ownerId: req.user._id,
     modes: ["Taiko"],
     modderType: "modder",
+    createDate: new Date(),
   });
 
   await newSettings.save();

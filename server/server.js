@@ -12,6 +12,9 @@ const auth = require("./auth");
 const db = require("./db");
 db.init();
 
+// start cron jobs
+require("./periodic/clean-queues");
+
 const app = express();
 
 app.set("trust proxy", true);

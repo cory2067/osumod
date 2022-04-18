@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const db = require("../server/db");
 const Request = require("../server/models/request");
 const Settings = require("../server/models/settings");
+const User = require("../server/models/user");
 const fs = require("fs");
 
 // This script fetches *all* requests and caches them in this json file
@@ -14,55 +15,57 @@ async function main() {
   const queues = await Settings.find({ archived: { $ne: true } });
   const userToQueue = queues
     .map((queue) => queue.toObject())
-    .reduce((acc, cur) => ({ ...acc, [cur.owner]: cur }), {});
+    .reduce((acc, cur) => ({ ...acc, [cur.ownerId]: cur }), {});
+
+  const users = await User.find({});
+  const idToUsername = Object.fromEntries(users.map((u) => [u._id, u.username]));
 
   let userToReqs = {};
   if (fs.existsSync(JSON_PATH)) {
     userToReqs = JSON.parse(fs.readFileSync(JSON_PATH));
   } else {
     for (const queue of queues) {
+      const owner = queue.ownerId;
       const requests = await Request.find({
-        target: queue.owner,
+        targetId: owner,
       });
-      userToReqs[queue.owner] = requests;
+      console.log(`Fetching requests for ${idToUsername[owner]}`);
+      userToReqs[owner] = requests;
     }
 
     const json = JSON.stringify(userToReqs);
     fs.writeFileSync(JSON_PATH, json);
   }
 
-  const users = Object.keys(userToReqs);
-  console.log(`There are a total of ${users.length} queues`);
+  const usersWithQueue = Object.keys(userToReqs);
+  console.log(`There are a total of ${usersWithQueue.length} queues`);
 
-  users
+  usersWithQueue
     .sort((a, b) => userToReqs[b].length - userToReqs[a].length)
     .forEach((user) => {
-      console.log(`${user} has ${userToReqs[user].length} requests`);
+      console.log(`${idToUsername[user]} has ${userToReqs[user].length} requests`);
     });
 
-  const emptyQueues = users.filter((user) => userToReqs[user].length === 0);
+  const emptyQueues = usersWithQueue.filter((user) => userToReqs[user].length === 0);
   console.log(`There are ${emptyQueues.length} queues with no requests`);
   const emptyAndClosedQueues = emptyQueues.filter((user) => !userToQueue[user].open);
   console.log(`Out of those, ${emptyAndClosedQueues.length} are closed`);
 
-  const usedQueues = users.filter((user) => !emptyQueues.includes(user));
+  const usedQueues = usersWithQueue.filter((user) => !emptyQueues.includes(user));
 
-  const reqTimes = usedQueues.map((user) => {
-    const reqs = userToReqs[user];
+  const reqTimes = usedQueues.map((userId) => {
+    const username = idToUsername[userId];
+    const reqs = userToReqs[userId];
     const reqDates = reqs.map((req) => new Date(req.requestDate));
     const latest = reqDates.sort((a, b) => b.getTime() - a.getTime())[0];
     const oldest = reqDates.sort((a, b) => a.getTime() - b.getTime())[0];
-    return { user, latest, oldest };
+    return { userId, username, latest, oldest };
   });
 
-  const userToLatest = reqTimes.reduce((acc, cur) => ({ ...acc, [cur.user]: cur.latest }), {});
-  const userToOldest = reqTimes.reduce((acc, cur) => ({ ...acc, [cur.user]: cur.oldest }), {});
+  console.log(reqTimes);
 
-  /*latestReqs
-    .sort((a, b) => b.latest.getTime() - a.latest.getTime())
-    .forEach((queue) => {
-      console.log(`${queue.user}'s last request was on ${queue.latest}`);
-    });*/
+  const userToLatest = reqTimes.reduce((acc, cur) => ({ ...acc, [cur.userId]: cur.latest }), {});
+  const userToOldest = reqTimes.reduce((acc, cur) => ({ ...acc, [cur.userId]: cur.oldest }), {});
 
   const ABANDONED_TIME = 60 * 24 * 60 * 60 * 1000; // 60 days
   const abandonedQueues = usedQueues.filter(
@@ -83,23 +86,25 @@ async function main() {
   console.log(
     "Archiving these users' queues because they've never received a single request and are closed"
   );
-  console.log(emptyAndClosedQueues.slice(0, emptyAndClosedQueues.length - 5));
+  const emptyAndClosedToArchive = emptyAndClosedQueues.slice(0, emptyAndClosedQueues.length - 20);
+  console.log(emptyAndClosedToArchive.map((u) => idToUsername[u]));
 
   console.log(
     "Archiving these users' queues because they've never responded to a single request, and it's been at least 60 days since they received their first request"
   );
-  console.log(abandonedQueues);
+  console.log(abandonedQueues.map((u) => idToUsername[u]));
 
   console.log(
     "Archiving these users' queues because they haven't received any new requests in 150 days"
   );
-  console.log(deadQueues);
+  console.log(deadQueues.map((u) => idToUsername[u]));
 
-  const toArchive = emptyAndClosedQueues.concat(abandonedQueues).concat(deadQueues);
+  //const toArchive = emptyAndClosedToArhive.concat(abandonedQueues).concat(deadQueues);
+  const toArchive = emptyAndClosedToArchive;
   console.log(`Archiving ${toArchive.length} queues`);
   for (const user of toArchive) {
     console.log(`Now archiving queue of ${user}`);
-    //await Settings.findOneAndUpdate({ owner: user }, { archived: true });
+    await Settings.findOneAndUpdate({ ownerId: user }, { archived: true });
   }
 
   mongoose.disconnect();
