@@ -399,16 +399,17 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
 router.getAsync("/queues", async (req, res) => {
   const queues = await Settings.find({ archived: { $ne: true } })
     .sort("-lastActionedDate")
-    .select("open ownerId modes modderType")
+    .select("open ownerId modes modderType lastActionedDate")
     .populate("ownerId");
 
   // map ownerId -> owner now that it's populated (i should have named this field differently)
   res.send(
-    queues.map(({ open, ownerId, modes, modderType }) => ({
+    queues.map(({ open, ownerId, modes, modderType, lastActionedDate }) => ({
       open,
       owner: ownerId,
       modes,
       modderType,
+      lastActionedDate,
     }))
   );
 });

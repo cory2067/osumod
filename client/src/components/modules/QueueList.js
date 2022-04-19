@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Button, List } from "antd";
+import { Layout, Tooltip, List } from "antd";
 import ModeIcon from "./ModeIcon";
 
 function QueueList({ title, queues, loading }) {
@@ -14,7 +14,17 @@ function QueueList({ title, queues, loading }) {
       renderItem={(item) => (
         <List.Item key={item._id}>
           <List.Item.Meta
-            title={<a href={`/${item.owner.username}`}>{item.owner.username} </a>}
+            title={
+              <Tooltip
+                title={
+                  item.lastActionedDate
+                    ? `Last active ${new Date(item.lastActionedDate).toLocaleString()}`
+                    : ""
+                }
+              >
+                <a href={`/${item.owner.username}`}>{item.owner.username} </a>
+              </Tooltip>
+            }
             description={
               <span>
                 {item.modderType === "modder" ? "Modder " : "Beatmap Nominator "}
