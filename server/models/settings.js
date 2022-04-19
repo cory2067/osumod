@@ -14,8 +14,7 @@ const SettingsSchema = new mongoose.Schema({
   modderType: { type: String, enum: ["full", "probation", "modder"] },
   archived: Boolean,
   notes: { type: String, max: 5000 },
-  createdDate: Date,
-  lastOpenedDate: Date, // when "open" status was toggled
+  lastActionedDate: Date, // when owner last performed any action on the queue
 });
 
 module.exports = mongoose.model("Settings", SettingsSchema);

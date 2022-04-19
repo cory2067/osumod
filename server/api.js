@@ -11,6 +11,8 @@ const Settings = require("./models/settings");
 const { addAsync } = require("@awaitjs/express");
 const router = addAsync(express.Router());
 
+const BANNED_USERS = ["28993615"];
+
 const ModderType = {
   FULL: "full", // Full BN
   PROBATION: "probation", // Probation BN
@@ -116,6 +118,9 @@ const getUserObj = async (identifier) => {
 
   return user;
 };
+
+const bumpActionedDate = (user) =>
+  Settings.findOneAndUpdate({ ownerId: user._id }, { $set: { lastActionedDate: new Date() } });
 
 /**
  * POST /api/request
@@ -277,6 +282,7 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
     _id: req.body.id,
     $or: [{ user: req.user.userid }, { targetId: req.user._id }],
   });
+  await bumpActionedDate(req.user);
   res.send({});
 });
 
@@ -292,11 +298,16 @@ router.deleteAsync("/request", ensure.loggedIn, async (req, res) => {
 router.postAsync("/request-edit", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} edited request ${req.body.id}`);
   // query for "target" ensures that the user can't modify requests on someone else's queue
-  const updated = await Request.findOneAndUpdate(
-    { _id: req.body.id, targetId: req.user._id },
-    { $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived } },
-    { new: true }
-  );
+  const [updated, _] = await Promise.all([
+    Request.findOneAndUpdate(
+      { _id: req.body.id, targetId: req.user._id },
+      {
+        $set: { feedback: req.body.feedback, status: req.body.status, archived: req.body.archived },
+      },
+      { new: true }
+    ),
+    bumpActionedDate(req.user),
+  ]);
   res.send(updated);
 });
 
@@ -328,6 +339,7 @@ router.postAsync("/request-refresh", ensure.loggedIn, async (req, res) => {
     { $set: map },
     { new: true }
   );
+  await bumpActionedDate(req.user);
   res.send(updated);
 });
 
@@ -358,7 +370,10 @@ router.getAsync("/settings", async (req, res) => {
  */
 router.postAsync("/settings", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} updated their settings`);
-  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: req.body.settings });
+  await Settings.findOneAndUpdate(
+    { ownerId: req.user._id },
+    { $set: { ...req.body.settings, lastActionedDate: new Date() } }
+  );
   res.send({});
 });
 
@@ -372,7 +387,7 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} toggled open to ${req.body.open}`);
   await Settings.findOneAndUpdate(
     { ownerId: req.user._id },
-    { $set: { open: req.body.open, lastOpenedDate: new Date() } }
+    { $set: { open: req.body.open, lastActionedDate: new Date() } }
   );
   res.send({});
 });
@@ -383,7 +398,7 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
  */
 router.getAsync("/queues", async (req, res) => {
   const queues = await Settings.find({ archived: { $ne: true } })
-    .sort("-lastOpenedDate")
+    .sort("-lastActionedDate")
     .select("open ownerId modes modderType")
     .populate("ownerId");
 
@@ -403,12 +418,20 @@ router.getAsync("/queues", async (req, res) => {
  * Create a queue for oneself
  */
 router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
+  if (BANNED_USERS.includes(req.user.userid)) {
+    logger.info(`Banned user ${req.user.username} attempted to create a queue`);
+    return res.status(403).send({
+      error: "You've been banned due to user reports.",
+    });
+  }
+
   const existing = await Settings.findOne({ ownerId: req.user._id });
+  const now = new Date();
   if (existing) {
     if (existing.archived) {
       logger.info(`${req.user.username} unarchived their queue`);
       existing.archived = false;
-      existing.createdDate = new Date();
+      existing.lastActionedDate = now;
       await existing.save();
     } else {
       logger.info(`${req.user.username} tried to create a queue, but they already have one`);
@@ -425,7 +448,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     ownerId: req.user._id,
     modes: ["Taiko"],
     modderType: "modder",
-    createdDate: new Date(),
+    lastActionedDate: now,
   });
 
   await newSettings.save();
@@ -457,6 +480,7 @@ router.postAsync("/archive-queue", ensure.loggedIn, async (req, res) => {
 router.postAsync("/notes", ensure.loggedIn, async (req, res) => {
   logger.info(`${req.user.username} set their queue notes`);
   await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { notes: req.body.content } });
+  await bumpActionedDate(req.user);
   res.send({});
 });
 
@@ -479,6 +503,7 @@ router.postAsync("/archive-batch", ensure.loggedIn, async (req, res) => {
   }
 
   const result = await Request.updateMany(query, { $set: { archived: true } });
+  await bumpActionedDate(req.user);
   res.send({ modified: result.nModified });
 });
 

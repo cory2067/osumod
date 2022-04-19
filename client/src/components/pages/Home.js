@@ -42,8 +42,12 @@ class Home extends Component {
       await post("/api/create-queue");
       navigate(`/settings`);
     } catch (e) {
-      console.log(e);
-      alert("Something went horribly wrong. Please report this issue to Cychloryn.");
+      if (e.error) {
+        alert(`Failed to create queue: ${e.error}`);
+      } else {
+        console.log(e);
+        alert("Something went horribly wrong. Please report this issue to Cychloryn.");
+      }
     }
     this.setState({ creating: false });
   };
