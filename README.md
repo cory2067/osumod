@@ -42,6 +42,13 @@ When logged in and on your own queue, there should be a settings tab. The settin
 - **Modder Type**: If you select BN, you'll be able to set the status of maps to "nominated". If you select regular modder, you'll just have a "finished" option instead.
 - **Gamemodes**: Requests that aren't from the specified gamemode will be automatically rejected.
 
+### Auto-cleanup
+Sometimes, modders will create a queue and then abandon it, leaving clutter on the main page. To prevent this, queues will be cleaned up automatically if inactive:
+- If a queue is left open for 3 weeks but the owner never responds to any requests, it will automatically be closed
+- If the queue owner does nothing (doesn't respond to any requests, doesn't open, etc) for 8 weeks, the queue will be automatically archived
+
+Archived queues can be revived by creating "Create Queue" from the homepage, and the 8 week counter will reset.
+
 ---
 
 ## Running osumod in development
