@@ -229,10 +229,8 @@ class Queue extends Component {
               <Button onClick={this.onRefresh} disabled={this.state.loading}>
                 Refresh
               </Button>
-              <Popconfirm title="Permanently delete this request?">
-                <Button onClick={this.onDelete} disabled={this.state.loading}>
-                  Delete
-                </Button>
+              <Popconfirm title="Permanently delete this request?" onConfirm={this.onDelete}>
+                <Button disabled={this.state.loading}>Delete</Button>
               </Popconfirm>
             </Form.Item>
           </Form>
