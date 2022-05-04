@@ -8,6 +8,8 @@ import { post } from "../../utilities";
 const { Header } = Layout;
 const { SubMenu } = Menu;
 
+const standardizeName = (name) => name.replace(/_/g, " ").toLowerCase();
+
 // Navbar + login stuff
 class Navbar extends Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class Navbar extends Component {
       const userId = this.props.user.userid;
       const owner = decodeURIComponent(urlSegment);
       if (!username) return false;
-      return owner.replace(/_/g, " ").toLowerCase() === username.toLowerCase() || owner == userId;
+      return standardizeName(owner) === standardizeName(username) || owner == userId;
     };
 
     const userPath = urlSegment === "settings" ? this.props.user.username : urlSegment;
