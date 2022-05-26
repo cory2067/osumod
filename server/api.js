@@ -162,8 +162,9 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     }
   }
 
-  if (isBN(settings) && map.status !== "Pending") {
-    errors.push(`Expected a Pending map (this is ${map.status})`);
+  // TODO: Make this configurable setting
+  if (isBN(settings) && !["Pending", "Graveyard"].includes(map.status)) {
+    errors.push(`Expected a Pending/Graveyard map (this is ${map.status})`);
   }
 
   // disable this until osumod can handle username changes properly
