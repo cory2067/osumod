@@ -102,9 +102,7 @@ class MapCard extends Component {
         {this.props.requester ? (
           <div className="MapCard-row">
             Requested to{" "}
-            <a href={`https://osu.ppy.sh/users/${this.props.target.username}`}>
-              ${this.props.target.username}
-            </a>
+            <a href={`/${this.props.target.username}`}>${this.props.target.username}</a>
           </div>
         ) : (
           <div className="MapCard-row">
