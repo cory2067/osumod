@@ -89,3 +89,15 @@
   display: flex;
   justify-content: space-around;
 }
+
+.MapCard-primary .MapCard-link {
+  color: rgb(47, 47, 47);
+}
+
+.MapCard-link {
+  color: rgba(0,0,0,0.65);
+}
+
+.MapCard-link:hover {
+  color: #000;
+}
