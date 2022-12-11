@@ -223,6 +223,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
     const numPending = await Request.countDocuments({
       status: "Pending",
       targetId: req.body.targetId,
+      archived: false,
     });
     if (numPending >= settings.maxPending) {
       logger.info(`Now closing requests`);
