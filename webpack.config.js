@@ -28,6 +28,7 @@ module.exports = {
     path: outputDir,
     publicPath: "/",
     filename: "bundle.js",
+    hashFunction: "sha256",
   },
   devtool: "source-map",
   module: {
