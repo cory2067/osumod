@@ -241,6 +241,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
  * params:
  *   - archived: get archived requests
  *   - targetId: whose queue to retrieve
+ *   - cursor: timestamp of the last request in the page
  */
 router.getAsync("/requests", async (req, res) => {
   const user = await getUserObj(req.query.target);
@@ -248,10 +249,14 @@ router.getAsync("/requests", async (req, res) => {
     return res.status(404).send({ err: "No such user" });
   }
 
-  const requests = await Request.find({
+  const query = {
     targetId: user._id,
     archived: req.query.archived,
-  }).sort({ requestDate: -1 });
+  };
+  if (req.query.cursor) {
+    query["requestDate"] = { $lt: req.query.cursor };
+  }
+  const requests = await Request.find(query).sort({ requestDate: -1 }).limit(50);
   res.send(requests);
 });
 

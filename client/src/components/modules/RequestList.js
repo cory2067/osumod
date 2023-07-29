@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Input, Table, Tooltip } from "antd";
+import { Layout, Input, Table, Tooltip, Button } from "antd";
 import MapCard, { DiffList, StatusLabel } from "../modules/MapCard";
 import Icon, { MessageOutlined } from "@ant-design/icons";
 
@@ -16,7 +16,16 @@ const STATUS_TO_ORDER = {
   Rejected: 7,
 };
 
-function RequestList({ requests, tableMode, archiveMode, requesterMode, showModType, onEdit }) {
+function RequestList({
+  requests,
+  tableMode,
+  archiveMode,
+  requesterMode,
+  showModType,
+  onEdit,
+  hasMore,
+  onShowMore,
+}) {
   const columns = [
     {
       title: "Status",
@@ -100,27 +109,36 @@ function RequestList({ requests, tableMode, archiveMode, requesterMode, showModT
     return true;
   });
   return (
-    <div className="RequestList-container">
-      {tableMode ? (
-        <Table
-          className="RequestList-table"
-          columns={columns}
-          dataSource={requests}
-          pagination={{ pageSize: 50 }}
-        />
-      ) : (
-        requests.map((req) => (
-          <MapCard
-            {...req}
-            edit={onEdit}
-            key={req._id}
-            compact={archiveMode}
-            requester={requesterMode}
-            showModType={showModType}
+    <>
+      <div className="RequestList-container">
+        {tableMode ? (
+          <Table
+            className="RequestList-table"
+            columns={columns}
+            dataSource={requests}
+            pagination={{ pageSize: 50 }}
           />
-        ))
+        ) : (
+          requests.map((req) => (
+            <MapCard
+              {...req}
+              edit={onEdit}
+              key={req._id}
+              compact={archiveMode}
+              requester={requesterMode}
+              showModType={showModType}
+            />
+          ))
+        )}
+      </div>
+      {hasMore && (
+        <div className="RequestList-show-more">
+          <Button type="primary" onClick={onShowMore}>
+            Show more
+          </Button>
+        </div>
       )}
-    </div>
+    </>
   );
 }
 

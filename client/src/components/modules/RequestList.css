@@ -16,3 +16,8 @@
   font-size: 18pt;
   text-align: center;
 }
+
+.RequestList-show-more {
+  display: flex;
+  justify-content: center;
+}

@@ -31,6 +31,7 @@ const BANNER_ENABLED = false;
 const BANNER_VERSION = "1";
 
 const COMPACT_KEY = "compactMode";
+const PAGE_SIZE = 50;
 
 const STATUS_TO_ORDER = {
   Accepted: 0,
@@ -53,14 +54,12 @@ class Queue extends Component {
       showDiscordInvite: localStorage.getItem(BANNER_KEY) !== BANNER_VERSION,
       loading: false,
       compact: localStorage.getItem(COMPACT_KEY) === "true",
+      numToShow: 50,
     };
   }
 
   async componentDidMount() {
-    get("/api/requests", {
-      archived: this.props.archived,
-      target: this.props.owner,
-    }).then((reqs) => this.setState({ reqs }));
+    this.fetchRequests(this.state.numToShow);
 
     get("/api/settings", { owner: this.props.owner })
       .then((settings) => {
@@ -75,6 +74,20 @@ class Queue extends Component {
         navigate("/404");
       });
   }
+
+  fetchRequests = () => {
+    const reqs = this.state.reqs;
+    get("/api/requests", {
+      archived: this.props.archived,
+      target: this.props.owner,
+      cursor: reqs.length ? reqs[reqs.length - 1].requestDate : "",
+    }).then((newReqs) => this.setState({ reqs: [...reqs, ...newReqs] }));
+  };
+
+  onShowMore = () => {
+    const numToShow = this.state.numToShow + 50;
+    this.fetchRequests(numToShow);
+  };
 
   isOwner = () => this.state.owner && this.props.user._id === this.state.owner._id;
 
@@ -186,6 +199,8 @@ class Queue extends Component {
           archiveMode={this.props.archived}
           showModType={this.state.m4m && !this.props.archived}
           onEdit={this.edit}
+          hasMore={this.state.reqs.length && this.state.reqs.length % PAGE_SIZE == 0}
+          onShowMore={this.onShowMore}
         />
         <Modal
           title="Manage Request"
