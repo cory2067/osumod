@@ -52,6 +52,7 @@ class Queue extends Component {
       initialLoad: true,
       compact: localStorage.getItem(COMPACT_KEY) === "true",
       numToShow: 50,
+      customTitle: null,
     };
   }
 
@@ -64,6 +65,7 @@ class Queue extends Component {
           m4m: settings.queue.m4m,
           modderType: settings.queue.modderType,
           owner: settings.owner,
+          customTitle: settings.queue.title,
         });
         document.title = `${settings.owner.username}'s queue`;
       })
@@ -134,13 +136,17 @@ class Queue extends Component {
   isBN = () => this.state.modderType === "probation" || this.state.modderType === "full";
 
   titleText = () => {
-    if (this.state.archived) {
-      return "Archives";
+    const name = this.state.owner.username;
+    if (this.props.archived) {
+      return `${name}'s Archives`;
+    }
+    if (this.state.customTitle) {
+      return this.state.customTitle;
     }
     if (this.isBN()) {
-      return "Nomination Queue";
+      return `${name}'s Nomination Queue`;
     }
-    return "Modding Queue";
+    return `${name}'s Modding Queue`;
   };
 
   toggleCompact = () =>
@@ -179,11 +185,7 @@ class Queue extends Component {
           <span className="Queue-compact-toggle-label">Table Mode:</span>
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
-        {this.state.modderType && (
-          <h1 className="Queue-header">
-            {this.state.owner.username}'s {this.titleText()}
-          </h1>
-        )}
+        {this.state.modderType && <h1 className="Queue-header">{this.titleText()}</h1>}
         {this.state.initialLoad ? (
           <Loading />
         ) : (

@@ -6,6 +6,7 @@ import {
   Layout,
   Button,
   InputNumber,
+  Input,
   Form,
   Select,
   Switch,
@@ -132,6 +133,9 @@ function Settings({ user, updateUser }) {
                 <Select.Option value="Catch the Beat">Catch</Select.Option>
                 <Select.Option value="Mania">Mania</Select.Option>
               </Select>
+            </Form.Item>
+            <Form.Item label="Custom queue title" name="title">
+              <Input maxLength={256} />
             </Form.Item>
             <Form.Item className="Settings-button-container">
               <Button type="primary" htmlType="submit" loading={loading === "save-settings"}>
