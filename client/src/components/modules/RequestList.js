@@ -109,7 +109,7 @@ function RequestList({
     }
     return true;
   });
-  const hasMore = requests.length && requests.length % PAGE_SIZE === 0;
+  const hasMore = requests.length > 0 && requests.length % PAGE_SIZE === 0;
   return (
     <>
       <div className="RequestList-container">

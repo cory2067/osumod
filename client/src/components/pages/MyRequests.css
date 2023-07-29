@@ -1,15 +1,16 @@
-.MyRequests-loading {
-  margin: 40px 0;
-  padding: 30px 50px;
-}
-
 .MyRequests-compact-toggle {
   position: absolute;
   right: 0;
   padding-right: inherit;
 }
 
-.MyRequests-compact-toggle-label {
+.MyRequests-hide-toggle {
+  position: absolute;
+  left: 0;
+  padding-left: inherit;
+}
+
+.MyRequests-toggle-label {
   padding-right: var(--s);
 }
 

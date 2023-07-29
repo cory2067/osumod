@@ -10,18 +10,15 @@ import {
   Form,
   Select,
   Switch,
-  Table,
   Alert,
   message,
-  Tooltip,
   Popconfirm,
 } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
 import { delet, get, post } from "../../utilities";
-import MapCard, { DiffList, StatusLabel } from "../modules/MapCard";
 import RequestList from "../modules/RequestList";
-import Icon, { MessageOutlined } from "@ant-design/icons";
+import Loading from "../modules/Loading";
 const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
@@ -52,6 +49,7 @@ class Queue extends Component {
       editing: null,
       showDiscordInvite: localStorage.getItem(BANNER_KEY) !== BANNER_VERSION,
       loading: false,
+      initialLoad: true,
       compact: localStorage.getItem(COMPACT_KEY) === "true",
       numToShow: 50,
     };
@@ -80,7 +78,7 @@ class Queue extends Component {
       archived: this.props.archived,
       target: this.props.owner,
       cursor: reqs.length ? reqs[reqs.length - 1].requestDate : "",
-    }).then((newReqs) => this.setState({ reqs: [...reqs, ...newReqs] }));
+    }).then((newReqs) => this.setState({ reqs: [...reqs, ...newReqs], initialLoad: false }));
   };
 
   isOwner = () => this.state.owner && this.props.user._id === this.state.owner._id;
@@ -181,20 +179,23 @@ class Queue extends Component {
           <span className="Queue-compact-toggle-label">Table Mode:</span>
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
-
         {this.state.modderType && (
           <h1 className="Queue-header">
             {this.state.owner.username}'s {this.titleText()}
           </h1>
         )}
-        <RequestList
-          requests={this.state.reqs}
-          tableMode={this.state.compact}
-          archiveMode={this.props.archived}
-          showModType={this.state.m4m && !this.props.archived}
-          onEdit={this.edit}
-          onShowMore={this.fetchRequests}
-        />
+        {this.state.initialLoad ? (
+          <Loading />
+        ) : (
+          <RequestList
+            requests={this.state.reqs}
+            tableMode={this.state.compact}
+            archiveMode={this.props.archived}
+            showModType={this.state.m4m && !this.props.archived}
+            onEdit={this.edit}
+            onShowMore={this.fetchRequests}
+          />
+        )}
         <Modal
           title="Manage Request"
           visible={this.state.editing}
