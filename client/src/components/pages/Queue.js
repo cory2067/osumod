@@ -31,7 +31,6 @@ const BANNER_ENABLED = false;
 const BANNER_VERSION = "1";
 
 const COMPACT_KEY = "compactMode";
-const PAGE_SIZE = 50;
 
 const STATUS_TO_ORDER = {
   Accepted: 0,
@@ -82,11 +81,6 @@ class Queue extends Component {
       target: this.props.owner,
       cursor: reqs.length ? reqs[reqs.length - 1].requestDate : "",
     }).then((newReqs) => this.setState({ reqs: [...reqs, ...newReqs] }));
-  };
-
-  onShowMore = () => {
-    const numToShow = this.state.numToShow + 50;
-    this.fetchRequests(numToShow);
   };
 
   isOwner = () => this.state.owner && this.props.user._id === this.state.owner._id;
@@ -199,8 +193,7 @@ class Queue extends Component {
           archiveMode={this.props.archived}
           showModType={this.state.m4m && !this.props.archived}
           onEdit={this.edit}
-          hasMore={this.state.reqs.length && this.state.reqs.length % PAGE_SIZE == 0}
-          onShowMore={this.onShowMore}
+          onShowMore={this.fetchRequests}
         />
         <Modal
           title="Manage Request"

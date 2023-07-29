@@ -5,6 +5,8 @@ import Icon, { MessageOutlined } from "@ant-design/icons";
 
 import "./RequestList.css";
 
+const PAGE_SIZE = 50;
+
 const STATUS_TO_ORDER = {
   Accepted: 0,
   Pending: 1,
@@ -23,7 +25,6 @@ function RequestList({
   requesterMode,
   showModType,
   onEdit,
-  hasMore,
   onShowMore,
 }) {
   const columns = [
@@ -108,6 +109,7 @@ function RequestList({
     }
     return true;
   });
+  const hasMore = requests.length && requests.length % PAGE_SIZE === 0;
   return (
     <>
       <div className="RequestList-container">
@@ -116,7 +118,7 @@ function RequestList({
             className="RequestList-table"
             columns={columns}
             dataSource={requests}
-            pagination={{ pageSize: 50 }}
+            pagination={{ pageSize: PAGE_SIZE }}
           />
         ) : (
           requests.map((req) => (

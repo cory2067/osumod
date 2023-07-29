@@ -8,8 +8,14 @@ const { Content } = Layout;
 import RequestList from "../modules/RequestList";
 
 function MyRequests({ user }) {
-  const [requests, setRequests] = useState();
+  const [requests, setRequests] = useState([]);
   const [tableMode, setTableMode] = useState(false);
+
+  const fetchRequests = () => {
+    get("/api/my-requests", {
+      cursor: requests.length ? requests[requests.length - 1].requestDate : "",
+    }).then((newReqs) => setRequests([...requests, ...newReqs]));
+  };
 
   useEffect(() => {
     document.title = "My Requests";
@@ -17,7 +23,7 @@ function MyRequests({ user }) {
 
   useEffect(() => {
     if (!user._id) return;
-    get("/api/my-requests").then((res) => setRequests(res));
+    fetchRequests();
   }, [user]);
 
   if (user.loggedOut) {
@@ -45,7 +51,12 @@ function MyRequests({ user }) {
         <Switch checked={tableMode} onClick={() => setTableMode(!tableMode)} />
       </div>
       <h1 className="MyRequests-header">Requests to Modders</h1>
-      <RequestList requests={requests} requesterMode={true} tableMode={tableMode} />
+      <RequestList
+        requests={requests}
+        requesterMode={true}
+        tableMode={tableMode}
+        onShowMore={fetchRequests}
+      />
     </Content>
   );
 }
