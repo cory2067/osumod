@@ -30,7 +30,7 @@
     "express-session": "^1.17.0",
     "heroku-ssl-redirect": "0.0.4",
     "moment": "^2.24.0",
-    "mongoose": "^5.12.1",
+    "mongoose": "^6.11.4",
     "node-cron": "^3.0.0",
     "node-fetch": "^2.6.1",
     "node-osu": "^2.2.0",
