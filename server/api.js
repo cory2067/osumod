@@ -413,14 +413,13 @@ router.postAsync("/open", ensure.loggedIn, async (req, res) => {
 router.getAsync("/queues", async (req, res) => {
   const queues = await Settings.find({ archived: { $ne: true } })
     .sort("-lastActionedDate")
-    .select("open ownerId modes modderType lastActionedDate")
-    .populate("ownerId");
+    .select("open owner ownerId modes modderType lastActionedDate");
 
   // map ownerId -> owner now that it's populated (i should have named this field differently)
   res.send(
-    queues.map(({ open, ownerId, modes, modderType, lastActionedDate }) => ({
+    queues.map(({ open, owner, ownerId, modes, modderType, lastActionedDate }) => ({
       open,
-      owner: ownerId,
+      owner: { _id: ownerId, username: owner },
       modes,
       modderType,
       lastActionedDate,
@@ -461,6 +460,7 @@ router.postAsync("/create-queue", ensure.loggedIn, async (req, res) => {
     cooldown: 0,
     m4m: false,
     ownerId: req.user._id,
+    owner: req.user.username,
     modes: ["Taiko"],
     modderType: "modder",
     lastActionedDate: now,
@@ -533,6 +533,7 @@ router.postAsync("/update-username", ensure.loggedIn, async (req, res) => {
     { username: osuUser.name },
     { new: true }
   );
+  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { username: osuUser.name } });
   res.send(user);
 });
 

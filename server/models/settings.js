@@ -8,7 +8,7 @@ const SettingsSchema = new mongoose.Schema({
   maxPending: Number,
   cooldown: Number,
   m4m: Boolean,
-  owner: String, // Deprecated
+  owner: String, // Redundant, but duplicating here to make listing queues more efficient
   title: String,
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   modes: [{ type: String, enum: ["Standard", "Taiko", "Catch the Beat", "Mania"] }],
