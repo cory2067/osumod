@@ -17,22 +17,15 @@ const cleanQueues = async () => {
 
   // ignore queues that are open and ones that are already archived
   const queues = await Settings.find({ archived: { $ne: true } }).select(
-    "ownerId open lastActionedDate"
+    "ownerId owner open lastActionedDate"
   );
-
-  const users = await User.find({});
-  const idToUsername = Object.fromEntries(users.map((u) => [u._id, u.username]));
-
-  const userToQueue = queues
-    .map((queue) => queue.toObject())
-    .reduce((acc, cur) => ({ ...acc, [cur.ownerId]: cur }), {});
 
   const getLastActiveDate = (queue) => {
     if (queue.lastActionedDate) {
       return new Date(queue.lastActionedDate);
     }
 
-    return SCRIPT_CREATE_DATE;
+    return new Date(SCRIPT_CREATE_DATE);
   };
 
   const now = new Date();
@@ -45,12 +38,12 @@ const cleanQueues = async () => {
   );
 
   for (const queue of queuesToClose) {
-    logger.info(`Now closing queue ${idToUsername[queue.ownerId]}`);
+    logger.info(`Now closing queue ${queue.owner}`);
     await Settings.findOneAndUpdate({ ownerId: queue.ownerId }, { open: false });
   }
 
   for (const queue of queuesToArchive) {
-    logger.info(`Now archiving queue ${idToUsername[queue.ownerId]}`);
+    logger.info(`Now archiving queue ${queue.owner}`);
     await Settings.findOneAndUpdate({ ownerId: queue.ownerId }, { archived: true, open: false });
   }
 
