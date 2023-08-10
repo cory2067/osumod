@@ -533,7 +533,7 @@ router.postAsync("/update-username", ensure.loggedIn, async (req, res) => {
     { username: osuUser.name },
     { new: true }
   );
-  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { username: osuUser.name } });
+  await Settings.findOneAndUpdate({ ownerId: req.user._id }, { $set: { owner: osuUser.name } });
   res.send(user);
 });
 
