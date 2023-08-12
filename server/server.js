@@ -26,7 +26,7 @@ const MongoStore = require("connect-mongo")(session);
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    store: new MongoStore({ mongooseConnection: db.getConnection(), touchAfter: 24 * 3600 }),
+    store: new MongoStore({ mongooseConnection: db.getConnection() }),
     resave: false,
     saveUninitialized: true,
   })
