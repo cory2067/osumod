@@ -69,3 +69,5 @@ export async function getStage(tourneyId) {
 
   return [tourney, { ...current, index: curIndex }];
 }
+
+export const getProfile = (user) => `https://osu.ppy.sh/u/${user.userid}`;

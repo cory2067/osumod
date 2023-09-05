@@ -16,9 +16,13 @@ import {
 } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
-import { delet, get, post } from "../../utilities";
+import { delet, get, post, getProfile } from "../../utilities";
+import { ProfileOutlined } from "@ant-design/icons";
 import RequestList from "../modules/RequestList";
 import Loading from "../modules/Loading";
+import OsuLogo from "../../public/osu-logo.svg";
+import OsuLogoOutline from "../../public/osu-logo-outline.svg";
+import Icon from "@ant-design/icons";
 const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
@@ -185,7 +189,14 @@ class Queue extends Component {
           <span className="Queue-compact-toggle-label">Table Mode:</span>
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
-        {this.state.modderType && <h1 className="Queue-header">{this.titleText()}</h1>}
+        {this.state.modderType && (
+          <h1 className="Queue-header">
+            <a className="Queue-icon-outer" href={getProfile(this.state.owner)} target="_blank">
+              {<Icon component={OsuLogoOutline} className="Queue-header-icon" />}
+            </a>
+            <span>{this.titleText()}</span>
+          </h1>
+        )}
         {this.state.initialLoad ? (
           <Loading />
         ) : (
