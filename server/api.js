@@ -278,9 +278,11 @@ router.getAsync("/my-requests", ensure.loggedIn, async (req, res) => {
     .populate("targetId")
     .sort({ requestDate: -1 })
     .limit(50);
-  res.send(
-    requests.map((r) => ({ ...r.toObject(), targetId: r.targetId._id, target: r.targetId }))
-  );
+  
+  const results = requests
+    .filter((r) => !!r.targetId)
+    .map((r) => ({ ...r.toObject(), targetId: r.targetId._id, target: r.targetId }));
+  res.send(results);
 });
 
 /**
