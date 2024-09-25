@@ -1,4 +1,5 @@
 import React from "react";
+import * as d3 from 'd3';
 
 import Icon from "@ant-design/icons";
 
@@ -15,14 +16,17 @@ const iconMap = {
   Mania: ManiaIcon,
 };
 
-// https://github.com/ppy/osu-web/blob/master/resources/assets/lib/utils/beatmap-helper.ts
+// https://github.com/ppy/osu-web/blob/87212089ea72cae7c6dbcde78450516181ccb96c/resources/js/utils/beatmap-helper.ts
+const difficultyColourSpectrum = d3.scaleLinear()
+  .domain([0.1, 1.25, 2, 2.5, 3.3, 4.2, 4.9, 5.8, 6.7, 7.7, 9])
+  .clamp(true)
+  .range(['#4290FB', '#4FC0FF', '#4FFFD5', '#7CFF4F', '#F6F05C', '#FF8068', '#FF4E6F', '#C645B8', '#6563DE', '#18158E', '#000000'])
+  .interpolate(d3.interpolateRgb.gamma(2.2));
+
 const getDiffColor = (rating) => {
-  if (rating < 2) return "#88b300";
-  if (rating < 2.7) return "#66ccff";
-  if (rating < 4) return "#ffcc22";
-  if (rating < 5.3) return "#ff66aa";
-  if (rating < 6.5) return "#aa88ff";
-  return "#121415";
+  if (rating < 0.1) return '#AAAAAA';
+  if (rating >= 9) return '#000000';
+  return difficultyColourSpectrum(rating);
 };
 
 function ModeIcon(props) {
