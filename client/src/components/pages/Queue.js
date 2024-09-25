@@ -17,7 +17,7 @@ import {
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
 import { delet, get, post, getProfile } from "../../utilities";
-import { ProfileOutlined } from "@ant-design/icons";
+import { CheckCircleFilled, StopFilled } from "@ant-design/icons";
 import RequestList from "../modules/RequestList";
 import Loading from "../modules/Loading";
 import OsuLogo from "../../public/osu-logo.svg";
@@ -70,6 +70,7 @@ class Queue extends Component {
           modderType: settings.queue.modderType,
           owner: settings.owner,
           customTitle: settings.queue.title,
+          open: settings.queue.open,
         });
         document.title = `${settings.owner.username}'s queue`;
       })
@@ -190,12 +191,20 @@ class Queue extends Component {
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
         {this.state.modderType && (
+          <>
           <h1 className="Queue-header">
             <a className="Queue-icon-outer" href={getProfile(this.state.owner)} target="_blank">
               {<Icon component={OsuLogoOutline} className="Queue-header-icon" />}
             </a>
             <span>{this.titleText()}</span>
           </h1>
+          <div className="Queue-subheader">
+            <h2>
+                {this.state.open ? <CheckCircleFilled style={{ color: "#22A522" }} /> : <StopFilled style={{ color: "#EE2629" }} />} {" "}
+                {this.state.open ? "Open" : "Closed"}
+            </h2>
+            </div>
+          </>
         )}
         {this.state.initialLoad ? (
           <Loading />
