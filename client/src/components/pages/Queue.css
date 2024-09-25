@@ -12,6 +12,14 @@
   gap: 4px;
 }
 
+.Queue-subheader {
+  font-size: 10pt;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
 .Queue-icon-outer {
   display: inline-flex;
   align-items: center;
