@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const RequestSchema = new mongoose.Schema({
   user: Number,
+  username: String,
   requestDate: Date,
   mapId: Number,
   mapsetId: Number,

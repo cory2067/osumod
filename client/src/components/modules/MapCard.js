@@ -109,16 +109,30 @@ class MapCard extends Component {
             </a>
           </div>
         ) : (
-          <div className="MapCard-row">
-            Mapset by{" "}
-            <a
-              className="MapCard-link"
-              target="_blank"
-              href={`https://osu.ppy.sh/users/${this.props.creator}`}
-            >
-              {this.props.creator}
-            </a>
-          </div>
+            <>
+              <div className="MapCard-row">
+              Mapset by{" "}
+              <a
+                className="MapCard-link"
+                target="_blank"
+                href={`https://osu.ppy.sh/users/${this.props.creator}`}
+              >
+                {this.props.creator}
+              </a>
+            </div>
+            {this.props.username && this.props.username !== this.props.creator && 
+              <div className="MapCard-row">
+                Requested by{" "}
+                <a
+                  className="MapCard-link"
+                  target="_blank"
+                  href={`https://osu.ppy.sh/users/${this.props.username}`}
+                >
+                  {this.props.username}
+                </a>
+              </div>
+            }
+          </>
         )}
 
         {!this.props.compact && (

@@ -212,6 +212,7 @@ router.postAsync("/request", ensure.loggedIn, async (req, res) => {
       ...map,
       status: "Pending",
       user: req.user.userid,
+      username: req.user.username,
       requestDate: now,
       targetId: req.body.targetId,
       m4m: req.body.m4m || false,
