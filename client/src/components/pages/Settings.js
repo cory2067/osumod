@@ -87,7 +87,7 @@ function Settings({ user, updateUser }) {
   const reqLink = `${window.location.protocol}//${window.location.host}/${user.username}/request`;
 
   return (
-    <Content className="content">
+    <Content className="content Settings-container">
       {settings && user._id ? (
         <div className="Settings-wrapper">
           <Paragraph>
@@ -190,7 +190,7 @@ function Settings({ user, updateUser }) {
           </Button>
         </div>
       ) : (
-        <div className="Settings-loading">
+        <div className="Settings-loading Settings-container">
           <Spin size="large" />
         </div>
       )}
