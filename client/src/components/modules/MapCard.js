@@ -16,8 +16,6 @@ import { Card, Tooltip } from "antd";
 import "./MapCard.css";
 import ModeIcon from "./ModeIcon";
 
-const maxDiffs = 10;
-
 const icons = {
   Pending: InfoCircleTwoTone,
   Rejected: CloseCircleTwoTone,
@@ -36,10 +34,53 @@ const colors = {
   Ranked: "#eb2f96",
 };
 
-export function DiffList({ diffs, tableMode }) {
+export function DiffList({ diffs, tableMode, maxDiffs }) {
+  if (diffs.length > maxDiffs) {
+    const diffsByMode = {};
+    for (const diff of diffs) {
+      if (!diffsByMode[diff.mode]) {
+        diffsByMode[diff.mode] = [];
+      }
+      diffsByMode[diff.mode].push(diff);
+    }
+    return (
+      <div className={`MapCard-diff-list ${tableMode ? "table-mode" : ""}`}>
+        <div style={{ display: "flex" }}>
+          {Object.entries(diffsByMode).map(([mode, diffs]) => {
+            if (diffs.length === 1) {
+              const diff = diffs[0];
+              return (
+                <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
+                  <span>
+                    <ModeIcon {...diff} />
+                  </span>
+                </Tooltip>
+              );
+            }
+
+            // Multiple diffs: show number of diffs and SR spread in the tooltip
+            const bottomDiff = diffs[0];
+            const topDiff = diffs[diffs.length - 1];
+            return (
+              <Tooltip
+                key={topDiff._id}
+                title={`${bottomDiff.sr}☆ - ${topDiff.sr}☆`}
+                placement="bottom"
+              >
+                <span className="MapCard-diff-with-number">
+                  <ModeIcon {...topDiff} padding={"7px 3px 7px 7px"} />
+                  <span className="MapCard-num-diffs">{diffs.length}</span>
+                </span>
+              </Tooltip>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={`MapCard-diff-list ${tableMode ? "table-mode" : ""}`}>
-      {diffs.slice(-maxDiffs).map((diff) => (
+      {diffs.map((diff) => (
         <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
           <span>
             <ModeIcon {...diff} />
@@ -106,7 +147,7 @@ class MapCard extends Component {
                   </span>
                 </div>
               </div>
-              <DiffList diffs={this.props.diffs} />
+              <DiffList diffs={this.props.diffs} maxDiffs={10} />
             </div>
           </a>
         }

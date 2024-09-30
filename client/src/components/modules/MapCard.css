@@ -72,13 +72,24 @@
   border-radius: 10px;
   background-color: rgba(23, 26, 28, 0.6);
   display: inline-block;
+  color: #fd5;
+}
+
+.MapCard-diff-list.table-mode {
+  background-color: inherit;
+  color: var(--primary)
+}
+
+.MapCard-diff-with-number {
+  display: flex;
+  align-items: center;
 }
 
 
-
-.MapCard-diff-list.table-mode {
-  background-color: #f5f5f5;
-  border: 2px solid #888;
+.MapCard-num-diffs {
+  font-size: 20px;
+  font-weight: 600;
+  padding-right: 7px;
 }
 
 .MapCard-diff {
