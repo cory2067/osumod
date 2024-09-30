@@ -93,8 +93,18 @@ class MapCard extends Component {
         cover={
           <a className="MapCard-cover" target="_blank" href={this.getLink()}>
             <img src={this.props.image} />
-            <div className="MapCard-image-overlay">
+            <div className="MapCard-image-overlay-top">
               <DiffList diffs={this.props.diffs} />
+              <div>
+                <div className="MapCard-attr-list">
+                  <span className="MapCard-attr">
+                    <ClockCircleTwoTone twoToneColor="#fd" /> {this.props.length}
+                  </span>
+                  <span className="MapCard-attr">
+                    <DashboardTwoTone twoToneColor="#fd" /> {this.props.bpm}bpm
+                  </span>
+                </div>
+              </div>
             </div>
           </a>
         }
@@ -137,20 +147,6 @@ class MapCard extends Component {
                 </a>
               </div>
             )}
-          </>
-        )}
-
-        {!this.props.compact && (
-          <>
-            <div className="MapCard-divider"></div>
-            <div className="MapCard-attr-list">
-              <span className="MapCard-attr">
-                <ClockCircleTwoTone /> {this.props.length}
-              </span>
-              <span className="MapCard-attr">
-                <DashboardTwoTone /> {this.props.bpm}bpm
-              </span>
-            </div>
           </>
         )}
 

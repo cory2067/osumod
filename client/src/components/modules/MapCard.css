@@ -90,8 +90,16 @@
 }
 
 .MapCard-attr-list {
-  display: flex;
-  justify-content: space-around;
+  display: inline-block;
+  color: #fd5;
+  font-weight: 600;
+  background-color: rgba(57, 66, 70, 0.7);
+  border-radius: 10px;
+  margin-top: 6px;
+}
+
+.MapCard-attr-list svg {
+  color: #fd5;
 }
 
 .MapCard-primary .MapCard-link {
@@ -110,7 +118,7 @@
   position: relative;
 }
 
-.MapCard-image-overlay {
+.MapCard-image-overlay-top {
   position: absolute;
   left: 0;
   top: 0;
