@@ -70,7 +70,7 @@
 
 .MapCard-diff-list {
   border-radius: 10px;
-  background-color: rgba(23, 26, 28, 0.6);
+  background-color: rgba(57, 66, 70, 0.7);
   display: inline-block;
   color: #fd5;
 }
@@ -106,7 +106,7 @@
   display: inline-block;
   color: #fd5;
   font-weight: 600;
-  background-color: rgba(23, 26, 28, 0.6);
+  background-color: rgba(57, 66, 70, 0.7);
   border-radius: 10px;
   margin-bottom: 6px;
 }
