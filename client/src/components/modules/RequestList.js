@@ -73,7 +73,7 @@ function RequestList({
       title: "Difficulties",
       dataIndex: "diffs",
       key: "diffs",
-      render: (diffs) => <DiffList diffs={diffs} />,
+      render: (diffs) => <DiffList diffs={diffs} tableMode={true} />,
     },
     {
       title: "Mapper's Comment",

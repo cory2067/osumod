@@ -16,6 +16,8 @@ import { Card, Tooltip } from "antd";
 import "./MapCard.css";
 import ModeIcon from "./ModeIcon";
 
+const maxDiffs = 10;
+
 const icons = {
   Pending: InfoCircleTwoTone,
   Rejected: CloseCircleTwoTone,
@@ -34,10 +36,10 @@ const colors = {
   Ranked: "#eb2f96",
 };
 
-export function DiffList({ diffs }) {
+export function DiffList({ diffs, tableMode }) {
   return (
-    <div className="MapCard-diff-list">
-      {diffs.map((diff) => (
+    <div className={`MapCard-diff-list ${tableMode ? "table-mode" : ""}`}>
+      {diffs.slice(-maxDiffs).map((diff) => (
         <Tooltip key={diff._id} title={`${diff.name} (${diff.sr}☆)`} placement="bottom">
           <span>
             <ModeIcon {...diff} />
@@ -89,8 +91,11 @@ class MapCard extends Component {
         }
         bordered={true}
         cover={
-          <a target="_blank" href={this.getLink()}>
+          <a className="MapCard-cover" target="_blank" href={this.getLink()}>
             <img src={this.props.image} />
+            <div className="MapCard-image-overlay">
+              <DiffList diffs={this.props.diffs} />
+            </div>
           </a>
         }
         className="MapCard-card"
@@ -109,8 +114,8 @@ class MapCard extends Component {
             </a>
           </div>
         ) : (
-            <>
-              <div className="MapCard-row">
+          <>
+            <div className="MapCard-row">
               Mapset by{" "}
               <a
                 className="MapCard-link"
@@ -120,7 +125,7 @@ class MapCard extends Component {
                 {this.props.creator}
               </a>
             </div>
-            {this.props.username && this.props.username !== this.props.creator && 
+            {this.props.username && this.props.username !== this.props.creator && (
               <div className="MapCard-row">
                 Requested by{" "}
                 <a
@@ -131,7 +136,7 @@ class MapCard extends Component {
                   {this.props.username}
                 </a>
               </div>
-            }
+            )}
           </>
         )}
 
@@ -166,13 +171,6 @@ class MapCard extends Component {
               <span className="u-bold">Feedback: </span>
               {this.props.feedback}
             </div>
-          </>
-        )}
-
-        {!this.props.compact && (
-          <>
-            <div className="MapCard-divider"></div>
-            <DiffList diffs={this.props.diffs} />
           </>
         )}
       </Card>
