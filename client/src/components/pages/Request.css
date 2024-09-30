@@ -1,10 +1,9 @@
 .Request-container {
-  margin-top: var(--l);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 720px;
+  max-width: 800px;
 }
 
 .Request-mapbox {
@@ -23,6 +22,7 @@
 
 .Request-edit-button {
   margin-top: var(--s);
+  margin-bottom: var(--m);
 }
 
 .Request-notes {
@@ -31,6 +31,7 @@
   padding: var(--m);
   padding-bottom: 2px;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 12px 0px;
+  margin-top: var(--xs);
 }
 
 .Request-error {
@@ -40,8 +41,9 @@
 }
 
 .Request-form {
+  margin-top: var(--l);
   background-color: white;
-  padding: var(--m);
+  padding: var(--l);
   box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 12px 0px;
 }
 

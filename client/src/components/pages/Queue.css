@@ -4,41 +4,6 @@
   justify-content: center;
 }
 
-.Queue-header {
-  font-size: 22pt;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: var(--xs);
-}
-
-.Queue-subheader {
-  font-size: 10pt;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: var(--s);
-}
-
-.Queue-icon-outer {
-  display: inline-flex;
-  align-items: center;
-}
-
-.Queue-header-icon {
-  font-size: 28pt;
-}
-
-.Queue-header-icon svg {
-  color: rgb(222, 106, 154);
-}
-
-.Queue-header-icon svg:hover {
-  color: rgba(222, 106, 154, 0.85);
-}
-
 .Queue-buttoncontainer {
   margin-bottom: 0 !important;
 }

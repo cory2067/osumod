@@ -16,13 +16,10 @@ import {
 } from "antd";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
-import { delet, get, post, getProfile } from "../../utilities";
-import { CheckCircleFilled, StopFilled } from "@ant-design/icons";
+import { delet, get, post, isBN } from "../../utilities";
 import RequestList from "../modules/RequestList";
 import Loading from "../modules/Loading";
-import OsuLogo from "../../public/osu-logo.svg";
-import OsuLogoOutline from "../../public/osu-logo-outline.svg";
-import Icon from "@ant-design/icons";
+import { QueueHeader } from "../modules/QueueHeader";
 const { Content } = Layout;
 
 const DISCORD_URL = "https://disc" + "ord.gg/J49Hgm8yct";
@@ -138,7 +135,12 @@ class Queue extends Component {
     });
   });
 
-  isBN = () => this.state.modderType === "probation" || this.state.modderType === "full";
+  toggleOpen = (open) => {
+    this.setState({ open });
+    post("/api/open", { open });
+  };
+
+  isBN = () => isBN(this.state.modderType);
 
   titleText = () => {
     const name = this.state.owner.username;
@@ -190,21 +192,19 @@ class Queue extends Component {
           <span className="Queue-compact-toggle-label">Table Mode:</span>
           <Switch checked={this.state.compact} onClick={this.toggleCompact} />
         </div>
-        {this.state.modderType && (
-          <>
-          <h1 className="Queue-header">
-            <a className="Queue-icon-outer" href={getProfile(this.state.owner)} target="_blank">
-              {<Icon component={OsuLogoOutline} className="Queue-header-icon" />}
-            </a>
-            <span>{this.titleText()}</span>
-          </h1>
-          <div className="Queue-subheader">
-            <h2>
-                {this.state.open ? <CheckCircleFilled style={{ color: "#22A522" }} /> : <StopFilled style={{ color: "#EE2629" }} />} {" "}
-                {this.state.open ? "Open" : "Closed"}
-            </h2>
-            </div>
-          </>
+        {this.state.owner && (
+          <QueueHeader
+            user={this.props.user}
+            owner={this.state.owner}
+            open={this.state.open}
+            modderType={this.state.modderType}
+            customTitle={
+              this.props.archived
+                ? `${this.state.owner.username}'s Archives`
+                : this.state.customTitle
+            }
+            toggleOpen={this.toggleOpen}
+          />
         )}
         {this.state.initialLoad ? (
           <Loading />

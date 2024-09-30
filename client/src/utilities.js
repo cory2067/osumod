@@ -71,3 +71,5 @@ export async function getStage(tourneyId) {
 }
 
 export const getProfile = (user) => `https://osu.ppy.sh/u/${user.userid}`;
+
+export const isBN = (modderType) => modderType === "probation" || modderType === "full";

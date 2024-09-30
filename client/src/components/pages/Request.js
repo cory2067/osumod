@@ -7,8 +7,11 @@ import MapCard from "../modules/MapCard";
 import gfm from "remark-gfm";
 import { CloseCircleTwoTone } from "@ant-design/icons";
 import { Layout, Result, Form, Input, message, Button, Switch, Spin } from "antd";
+import OsuLogoOutline from "../../public/osu-logo-outline.svg";
+import Icon from "@ant-design/icons";
 const { TextArea } = Input;
 import { navigate } from "@reach/router";
+import { QueueHeader } from "../modules/QueueHeader";
 
 const { Content } = Layout;
 
@@ -119,124 +122,126 @@ class Request extends Component {
     else if (!this.state.open) button = "Requests Closed";
     else if (!this.props.user._id) button = "Login to Request";
 
-    return (
-      <Content className="u-flex-justifyCenter">
-        {!this.state.owner._id ? (
+    if (!this.state.owner._id) {
+      return (
+        <Content className="u-flex-justifyCenter">
           <div className="Request-loading">
             <Spin size="large" />
           </div>
-        ) : (
-          <>
-            <div>
-              {this.isOwner() && (
-                <div className="Request-container">
-                  <Switch
-                    checked={this.state.open}
-                    onClick={this.toggleOpen}
-                    checkedChildren="Open"
-                    unCheckedChildren="Closed"
-                  />
-                  <Button
-                    className="Request-edit-button"
-                    shape="round"
-                    type="primary"
-                    onClick={this.toggleEditingNotes}
-                  >
-                    {this.state.editingNotes ? "Save Notes" : "Edit Notes"}
-                  </Button>
+        </Content>
+      );
+    }
+
+    return (
+      <Content className="content">
+        <QueueHeader
+          user={this.props.user}
+          owner={this.state.owner}
+          open={this.state.open}
+          modderType={this.state.modderType}
+          customTitle={this.state.customTitle}
+          toggleOpen={this.toggleOpen}
+        />
+        <div className="u-flex-justifyCenter">
+          <div>
+            {this.isOwner() && (
+              <div className="Request-container">
+                <Button
+                  className="Request-edit-button"
+                  shape="round"
+                  type="primary"
+                  onClick={this.toggleEditingNotes}
+                >
+                  {this.state.editingNotes ? "Save Notes" : "Edit Notes"}
+                </Button>
+              </div>
+            )}
+            <div className="Request-container Request-notes">
+              {this.state.editingNotes ? (
+                <>
+                  <TextArea rows={16} value={this.state.notes} onChange={this.handleNoteChange} />
+                  <a href={HELP_URL} target="_blank">
+                    Formatting help
+                  </a>
+                </>
+              ) : (
+                <ReactMarkdown plugins={[gfm]} children={this.insertVariables(this.state.notes)} />
+              )}
+            </div>
+            <div className="Request-container">
+              <div className="Request-form">
+                <Form {...layout} name="request" onFinish={this.onFinish}>
+                  <Form.Item label="Map Link" name="link">
+                    <Input />
+                  </Form.Item>
+
+                  <Form.Item label="Comments" name="comment">
+                    <TextArea rows={3} />
+                  </Form.Item>
+
+                  {this.state.m4m && (
+                    <Form.Item label="Can M4M" name="m4m" valuePropName="checked">
+                      <Switch checkedChildren="Yes" unCheckedChildren="No" />
+                    </Form.Item>
+                  )}
+
+                  <Form.Item style={{ float: "right", margin: 0 }}>
+                    <Button
+                      type="primary"
+                      htmlType="submit"
+                      loading={this.state.loading}
+                      disabled={!this.canRequest()}
+                    >
+                      {button}
+                    </Button>
+                  </Form.Item>
+                </Form>
+              </div>
+              {this.state.map && (
+                <div className="Request-mapbox" ref={this.mapRef}>
+                  <MapCard {...this.state.map} />
                 </div>
               )}
-              <div className="Request-container Request-notes">
-                {this.state.editingNotes ? (
-                  <>
-                    <TextArea rows={8} value={this.state.notes} onChange={this.handleNoteChange} />
-                    <a href={HELP_URL} target="_blank">
-                      Formatting help
-                    </a>
-                  </>
-                ) : (
-                  <ReactMarkdown
-                    plugins={[gfm]}
-                    children={this.insertVariables(this.state.notes)}
-                  />
-                )}
-              </div>
-              <div className="Request-container">
-                <div className="Request-form">
-                  <h1>{this.state.owner.username}'s Request Form</h1>
-                  <Form {...layout} name="request" onFinish={this.onFinish}>
-                    <Form.Item label="Map Link" name="link">
-                      <Input />
-                    </Form.Item>
 
-                    <Form.Item label="Comments" name="comment">
-                      <TextArea rows={3} />
-                    </Form.Item>
-
-                    {this.state.m4m && (
-                      <Form.Item label="Can M4M" name="m4m" valuePropName="checked">
-                        <Switch checkedChildren="Yes" unCheckedChildren="No" />
-                      </Form.Item>
-                    )}
-
-                    <Form.Item style={{ float: "right" }}>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        loading={this.state.loading}
-                        disabled={!this.canRequest()}
-                      >
-                        {button}
-                      </Button>
-                    </Form.Item>
-                  </Form>
+              {this.state.errors && (
+                <div className="Request-error">
+                  {this.state.errors.length === 0 ? (
+                    <Result
+                      status="success"
+                      title="Successfully submitted request!"
+                      extra={[
+                        <Button
+                          type="primary"
+                          key="view"
+                          onClick={() => navigate(`/${this.props.owner}`)}
+                        >
+                          View Requests
+                        </Button>,
+                        <Button key="undo" onClick={this.undo}>
+                          Undo
+                        </Button>,
+                      ]}
+                    />
+                  ) : (
+                    <Result
+                      className="Request-error"
+                      status="error"
+                      title="Failed to submit request"
+                    >
+                      <div>
+                        {this.state.errors.map((error, i) => (
+                          <div key={i}>
+                            <CloseCircleTwoTone twoToneColor="#eb2f96" /> {error}
+                          </div>
+                        ))}
+                      </div>
+                    </Result>
+                  )}
                 </div>
-                {this.state.map && (
-                  <div className="Request-mapbox" ref={this.mapRef}>
-                    <MapCard {...this.state.map} />
-                  </div>
-                )}
-
-                {this.state.errors && (
-                  <div className="Request-error">
-                    {this.state.errors.length === 0 ? (
-                      <Result
-                        status="success"
-                        title="Successfully submitted request!"
-                        extra={[
-                          <Button
-                            type="primary"
-                            key="view"
-                            onClick={() => navigate(`/${this.props.owner}`)}
-                          >
-                            View Requests
-                          </Button>,
-                          <Button key="undo" onClick={this.undo}>
-                            Undo
-                          </Button>,
-                        ]}
-                      />
-                    ) : (
-                      <Result
-                        className="Request-error"
-                        status="error"
-                        title="Failed to submit request"
-                      >
-                        <div>
-                          {this.state.errors.map((error, i) => (
-                            <div key={i}>
-                              <CloseCircleTwoTone twoToneColor="#eb2f96" /> {error}
-                            </div>
-                          ))}
-                        </div>
-                      </Result>
-                    )}
-                  </div>
-                )}
-              </div>
+              )}
             </div>
-          </>
-        )}
+          </div>
+        </div>
       </Content>
     );
   }
