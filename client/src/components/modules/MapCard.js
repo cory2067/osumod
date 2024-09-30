@@ -92,9 +92,10 @@ class MapCard extends Component {
         bordered={true}
         cover={
           <a className="MapCard-cover" target="_blank" href={this.getLink()}>
-            <img src={this.props.image} />
+            <div className="MapCard-image">
+              <img src={this.props.image} />
+            </div>
             <div className="MapCard-image-overlay-top">
-              <DiffList diffs={this.props.diffs} />
               <div>
                 <div className="MapCard-attr-list">
                   <span className="MapCard-attr">
@@ -105,6 +106,7 @@ class MapCard extends Component {
                   </span>
                 </div>
               </div>
+              <DiffList diffs={this.props.diffs} />
             </div>
           </a>
         }
