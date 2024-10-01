@@ -122,6 +122,7 @@ class Request extends Component {
     else if (!this.state.open) button = "Requests Closed";
     else if (!this.props.user._id) button = "Login to Request";
 
+
     if (!this.state.owner._id) {
       return (
         <Content className="u-flex-justifyCenter">
@@ -132,6 +133,7 @@ class Request extends Component {
       );
     }
 
+    const shouldRenderNotes = !!this.state.notes || this.state.editingNotes;
     return (
       <Content className="content">
         <QueueHeader
@@ -156,18 +158,19 @@ class Request extends Component {
                 </Button>
               </div>
             )}
-            <div className="Request-container Request-notes">
-              {this.state.editingNotes ? (
-                <>
-                  <TextArea rows={16} value={this.state.notes} onChange={this.handleNoteChange} />
-                  <a href={HELP_URL} target="_blank">
-                    Formatting help
-                  </a>
-                </>
-              ) : (
-                <ReactMarkdown plugins={[gfm]} children={this.insertVariables(this.state.notes)} />
-              )}
-            </div>
+            {shouldRenderNotes && (
+              <div className="Request-container Request-notes">
+                {this.state.editingNotes ? (
+                  <>
+                    <TextArea rows={16} value={this.state.notes} onChange={this.handleNoteChange} />
+                    <a href={HELP_URL} target="_blank">
+                      Formatting help
+                    </a>
+                  </>
+                ) : (
+                  <ReactMarkdown plugins={[gfm]} children={this.insertVariables(this.state.notes)} />
+                )}
+              </div>)}
             <div className="Request-container">
               <div className="Request-form">
                 <Form {...layout} name="request" onFinish={this.onFinish}>
