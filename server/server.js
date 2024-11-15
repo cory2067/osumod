@@ -8,7 +8,6 @@ const sslRedirect = require("heroku-ssl-redirect");
 
 const api = require("./api");
 const auth = require("./auth");
-const cors = require("cors");
 
 const db = require("./db");
 db.init();
@@ -21,9 +20,6 @@ const app = express();
 app.set("trust proxy", true);
 app.use(sslRedirect());
 app.use(express.json());
-
-// Allow cors access from osu for auth calls
-app.use(cors({ origin: "https://osu.ppy.sh"}));
 
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
